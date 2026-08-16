@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iron Nest Grid Mapper</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>🗺️ GRID MAPPER</h1>
+            <div class="header-controls">
+                <span class="grid-info-text">Grid Data</span>
+                <button id="exportBtn" class="btn">Export</button>
+                <button id="importBtn" class="btn">Import</button>
+                <input type="file" id="importFile" accept=".json" style="display:none">
+                <button id="clearAllBtn" class="btn btn-danger">Clear Session</button>
+            </div>
+        </header>
+
+        <div class="main-layout">
+            <!-- LEFT: GRID -->
+            <div class="grid-container">
+                <div class="grid-wrapper">
+                    <div class="grid-top-bar-wrapper">
+                        <div class="zoom-controls">
+                            <button id="zoomOutBtn" class="zoom-btn">−</button>
+                            <span id="zoomDisplay" class="zoom-display">100%</span>
+                            <button id="zoomInBtn" class="zoom-btn">+</button>
+                            <button id="resetZoomBtn" class="zoom-btn reset-btn" title="Reset zoom to 100%">Reset</button>
+                            <span class="divider">|</span>
+                            <button id="fontSizeDownBtn" class="zoom-btn font-btn" title="Decrease font size">A-</button>
+                            <span id="fontSizeDisplay" class="font-size-display">10</span>
+                            <button id="fontSizeUpBtn" class="zoom-btn font-btn" title="Increase font size">A+</button>
+                        </div>
+                        
+                        <div class="tool-controls">
+                            <span id="cursorPos" class="cursor-position">--</span>
+                            <button class="btn btn-tool active" data-tool="select">
+                                <i data-lucide="mouse-pointer" class="icon-sm"></i> Select
+                            </button>
+                            <button class="btn btn-tool" data-tool="drag">
+                                <i data-lucide="icon-hand" class="icon-sm"></i> Drag
+                            </button>
+                            <button class="btn btn-tool" data-tool="intelPen">
+                                <i data-lucide="icon-pen-tool" class="icon-sm"></i>
+                            </button>
+                            <button class="btn btn-tool" data-tool="vectorPen">
+                                <i data-lucide="icon-arrow-up-right" class="icon-sm"></i>
+                            </button>
+                            <button class="btn btn-tool" data-tool="compass">
+                                <i data-lucide="icon-compass" class="icon-sm"></i>
+                            </button>
+                            <button id="removeAllMeasurementsBtn" class="btn btn-tool" style="color:#ff6644; border-color:#8a3a3a; background:#3a1a1a; font-size:0.7rem; padding:2px 8px; height:28px;" title="Remove all intel, vectors, and compass drawings">
+                                <i data-lucide="icon-trash-2" class="icon-sm"></i> Clear Measurements
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Grid -->
+                    <div id="grid-body">
+                        <div id="row-labels"></div>
+                        <div id="grid-canvas-wrapper">
+                            <canvas id="gridCanvas"></canvas>
+                            <div id="tooltip" class="tooltip" style="display:none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================================ -->
+                <!-- CALCULATOR SECTION - Below the grid                          -->
+                <!-- ============================================================ -->
+                <div class="calculator-section">
+                    <div class="calculator-tabs">
+                        <button class="calculator-tab active" data-tab="ballistic">🎯 Ballistic</button>
+                        <button class="calculator-tab" data-tab="flighttime">⏱️ Flight Time</button>
+                    </div>
+
+                    <!-- Ballistic Calculator -->
+                    <div id="calcTabBallistic" class="calculator-tab-content active">
+                        <div class="calculator-panel">
+                            <div class="calc-row">
+                                <div class="calc-group">
+                                    <label>Range (km)</label>
+                                    <input type="number" id="ballisticRange" min="0" max="30" step="0.1" value="5">
+                                </div>
+                                <div class="calc-group">
+                                    <label>Powder Charge</label>
+                                    <select id="ballisticCharge">
+                                        <option value="1">1 (5 km max)</option>
+                                        <option value="2">2 (10 km max)</option>
+                                        <option value="3">3 (15 km max)</option>
+                                        <option value="4">4 (20 km max)</option>
+                                        <option value="5">5 (25 km max)</option>
+                                        <option value="6" selected>6 (30 km max)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="calc-row calc-results">
+                                <div class="calc-result-item">
+                                    <span class="calc-result-label">Elevation</span>
+                                    <span class="calc-result-value" id="ballisticElevation">10.00°</span>
+                                </div>
+                                <div class="calc-result-item">
+                                    <span class="calc-result-label">Flight Time</span>
+                                    <span class="calc-result-value" id="ballisticFlightTime">7.14 s</span>
+                                </div>
+                                <div class="calc-result-item">
+                                    <span class="calc-result-label">Max Range</span>
+                                    <span class="calc-result-value" id="ballisticMaxRange">30.0 km</span>
+                                </div>
+                            </div>
+                            <div class="calc-info" id="ballisticInfo">
+                                💡 Elevation is forced by the game: E = (Range × 12) / Charge
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Flight Time Calculator -->
+                    <div id="calcTabFlightTime" class="calculator-tab-content" style="display:none;">
+                        <div class="calculator-panel">
+                            <!-- Reverse Mode: User enters Time + Range, gets Charge + Elevation -->
+                            <div id="flightModeReverse" class="calc-mode-content active">
+                                <div class="calc-row">
+                                    <div class="calc-group">
+                                        <label>Desired Flight Time (seconds)</label>
+                                        <input type="number" id="flightTargetTime" min="0" max="60" step="0.1" value="20">
+                                    </div>
+                                    <div class="calc-group">
+                                        <label>Range (km)</label>
+                                        <input type="number" id="flightTargetRange" min="0" max="30" step="0.1" value="10">
+                                    </div>
+                                </div>
+                                <div class="calc-row calc-results">
+                                    <div class="calc-result-item">
+                                        <span class="calc-result-label">Required Elevation</span>
+                                        <span class="calc-result-value" id="reverseElevation">—</span>
+                                    </div>
+                                    <div class="calc-result-item">
+                                        <span class="calc-result-label">Optimal Powder Charge</span>
+                                        <span class="calc-result-value" id="reverseCharge">—</span>
+                                    </div>
+                                    <div class="calc-result-item">
+                                        <span class="calc-result-label">Flight Time</span>
+                                        <span class="calc-result-value" id="reverseFlightTime">20.00 s</span>
+                                    </div>
+                                </div>
+                                <div class="calc-row" style="margin-top:8px;">
+                                    <div class="calc-group" style="flex:1;">
+                                        <label>Max Range for Charge</label>
+                                        <span id="reverseMaxRangeDisplay" style="color:#b0c4de; font-family:monospace; font-size:1rem;">—</span>
+                                    </div>
+                                    <div class="calc-group" style="flex:1;">
+                                        <label>T60 for Charge</label>
+                                        <span id="reverseT60Display" style="color:#b0c4de; font-family:monospace; font-size:1rem;">—</span>
+                                    </div>
+                                    <div class="calc-group" style="flex:1;">
+                                        <label>Feasible?</label>
+                                        <span id="reverseFeasibleDisplay" style="font-family:monospace; font-size:1rem;">—</span>
+                                    </div>
+                                </div>
+                                <div class="calc-info" id="flightReverseInfo">
+                                    💡 Enter desired flight time and range. Calculator finds the optimal powder charge and required elevation.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: TOOLS & INFO -->
+            <div class="tools-panel">
+                <!-- Marker Tools -->
+                <div class="panel-section">
+                    <h3>📌 Markers</h3>
+                    <div id="addMarkerSection"></div>
+                    <div class="marker-list" id="markerList">
+                        <p class="empty-message">No markers yet. Right-click on grid to add.</p>
+                    </div>
+                </div>
+
+                <!-- Intel Display Section -->
+                <div class="panel-section intel-section">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid #2a3a4a; padding-bottom:8px;">
+                        <h3 class="intel-title" style="margin:0; border-bottom:none; padding-bottom:0;">📊 Intel</h3>
+                        <button id="removeAllIntelBtn" class="btn btn-sm" style="background:#3a2a2a; color:#ff8866; border:1px solid #8a3a3a; border-radius:3px; cursor:pointer; padding:2px 10px; font-size:0.7rem; font-family:inherit;">
+                            🗑️ Remove All Intel
+                        </button>
+                    </div>
+                    
+                    <!-- Tab Navigation -->
+                    <div class="intel-tabs">
+                        <button class="intel-tab active" data-tab="marker">Per Marker</button>
+                        <button class="intel-tab" data-tab="triangulate">📐 Triangulate</button>
+                    </div>
+                    
+                    <!-- Tab Content: Per Marker Intel -->
+                    <div id="intelTabMarker" class="intel-tab-content active">
+                        <div id="intelDisplay">
+                            <p class="empty-message">Select a point of interest to see intel</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab Content: Triangulate -->
+                    <div id="intelTabTriangulate" class="intel-tab-content" style="display:none;">
+                        <div id="triangulatePanel">
+                            <div class="form-group">
+                                <label>Create as:</label>
+                                <select id="triangulateTargetType">
+                                    <option value="target">🎯 Target</option>
+                                    <option value="spotter">👁️ Spotter</option>
+                                    <option value="reference">🟢 Reference Point</option>
+                                    <option value="nest">🏠 Iron Nest</option>
+                                </select>
+                            </div>
+                            
+                            <div id="triangulateItems">
+                            </div>
+                            
+                            <button id="addTriangulateItemBtn" class="btn btn-sm">➕ Add Intel Item</button>
+                            <button id="calculateTriangulateBtn" class="btn btn-primary" style="margin-top:10px; width:100%;">📐 Calculate Intersection</button>
+                            
+                            <div id="triangulateResults" style="margin-top:10px; display:none;">
+                                <div style="background:#0a121a; padding:10px; border-radius:3px; border-left:3px solid #ffd93d;">
+                                    <div id="triangulateResultDetails"></div>
+                                    <button id="triangulateCreateMarkerBtn" class="btn btn-sm" style="margin-top:8px; background:#2a5a3a; color:#88ffaa;">➕ Create Marker</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/markers.js"></script>
+    <script src="js/grid.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('images/icons.svg')
+                .then(r => r.text())
+                .then(text => {
+                    const div = document.createElement('div');
+                    div.innerHTML = text;
+                    const svg = div.querySelector('svg');
+                    if (svg) {
+                        svg.id = 'svg-sprite';
+                        svg.style.display = 'none';
+                        document.body.prepend(svg);
+                    }
+                })
+                .catch(e => console.warn('Could not load icons:', e));
+        });
+    </script>
+</body>
+</html>
