@@ -2,7 +2,48 @@
 // MAIN.JS - Application Entry Point
 // ==========================================
 
+
 document.addEventListener('DOMContentLoaded', function() {
+    // ============================================================
+    // BEARING DEBUG MODE
+    // ============================================================
+
+    const BEARING_DEBUG = true; // Set to false to disable
+
+    function bearingDebug(...args) {
+        if (BEARING_DEBUG) {
+            console.log('[BEARING]', ...args);
+        }
+    }
+
+    // Override setCurrentBearing with debug
+    const originalSetCurrentBearing = window.setCurrentBearing;
+    window.setCurrentBearing = function(bearing) {
+        bearingDebug('setCurrentBearing called with:', bearing);
+        currentBearing = bearing;
+        bearingDebug('currentBearing is now:', currentBearing);
+    };
+
+    // Also add a function to check bearing elements
+    function checkBearingElements() {
+        const ballisticBearing = document.getElementById('ballisticBearing');
+        const flightBearing = document.getElementById('flightBearing');
+        
+        bearingDebug('=== BEARING ELEMENT CHECK ===');
+        bearingDebug('ballisticBearing element:', ballisticBearing);
+        bearingDebug('ballisticBearing text:', ballisticBearing?.textContent);
+        bearingDebug('ballisticBearing style.color:', ballisticBearing?.style.color);
+        bearingDebug('flightBearing element:', flightBearing);
+        bearingDebug('flightBearing text:', flightBearing?.textContent);
+        bearingDebug('flightBearing style.color:', flightBearing?.style.color);
+        bearingDebug('currentBearing variable:', currentBearing);
+        
+        return { ballisticBearing, flightBearing };
+    }
+
+    // Make it globally accessible
+    window.checkBearingElements = checkBearingElements;
+
     // --- DOM References ---
     const elements = {
         canvas: document.getElementById('gridCanvas'),
@@ -26,6 +67,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Make gridMapper globally accessible for inline onclick handlers
     window.gridMapper = gridMapper;
+
+    // ============================================================
+    // TOAST NOTIFICATION
+    // ============================================================
+
+    function showToast(message, type = 'info') {
+        const existing = document.querySelector('.toast-notification');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification ' + type;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
+        }, 2000);
+    }
+
+    // Make showToast globally available
+    window.showToast = showToast;
 
     // ============================================================
     // CALCULATOR LOGIC
@@ -174,112 +235,376 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
+    // ============================================================
+    // CHARGE SELECTOR - Visual Powder Charge
+    // ============================================================
+
+    let selectedCharge = 6; // Default to 6 charges
+
+    function updateChargeSelector(range) {
+        const buttons = document.querySelectorAll('.charge-btn');
+        const maxRange = parseFloat(range) || 0;
+        
+        buttons.forEach(btn => {
+            const charge = parseInt(btn.dataset.charge);
+            const chargeMaxRange = getMaxRange(charge);
+            
+            // Remove all state classes
+            btn.classList.remove('charge-available', 'charge-active', 'charge-unavailable');
+            
+            // Check if this charge can reach the current range
+            const canReach = maxRange <= chargeMaxRange;
+            
+            if (!canReach) {
+                // Cannot reach the range -> UNAVAILABLE (red)
+                btn.classList.add('charge-unavailable');
+            } else if (charge <= selectedCharge) {
+                // Can reach AND is <= selected charge -> ACTIVE (green)
+                btn.classList.add('charge-active');
+            } else {
+                // Can reach AND is > selected charge -> AVAILABLE (white)
+                btn.classList.add('charge-available');
+            }
+        });
+    }
+
+    /**
+     * Initialize charge selector event listeners
+     */
+    function initChargeSelector() {
+        const buttons = document.querySelectorAll('.charge-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const charge = parseInt(this.dataset.charge);
+                const rangeInput = document.getElementById('ballisticRange');
+                const currentRange = parseFloat(rangeInput.value) || 0;
+                const maxRange = getMaxRange(charge);
+                
+                // Check if this charge is available for the current range
+                if (currentRange > maxRange) {
+                    // Show a brief flash to indicate unavailable
+                    this.style.transform = 'scale(0.9)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 200);
+                    // Show toast notification
+                    showToast(`Charge ${charge} cannot reach ${currentRange.toFixed(1)}km (max: ${maxRange.toFixed(1)}km)`, 'warning');
+                    return;
+                }
+                
+                // Update selected charge
+                selectedCharge = charge;
+                updateChargeSelector(currentRange);
+                
+                // Recalculate ballistic
+                updateBallisticCalculator();
+            });
+        });
+    }
+
     // --- Ballistic Calculator ---
     function updateBallisticCalculator() {
         const rangeInput = document.getElementById('ballisticRange');
-        const chargeSelect = document.getElementById('ballisticCharge');
         const elevationDisplay = document.getElementById('ballisticElevation');
         const flightTimeDisplay = document.getElementById('ballisticFlightTime');
-        const maxRangeDisplay = document.getElementById('ballisticMaxRange');
-        const infoDisplay = document.getElementById('ballisticInfo');
+        const bearingDisplay = document.getElementById('ballisticBearing');
 
-        if (!rangeInput || !chargeSelect) return;
+        if (!rangeInput) return;
 
-        const range = parseFloat(rangeInput.value) || 0;
-        const charge = parseInt(chargeSelect.value) || 6;
-        const maxRange = getMaxRange(charge);
-
-        // Clamp range to max
-        let clampedRange = Math.min(range, maxRange);
-        if (clampedRange !== range) {
-            rangeInput.value = clampedRange.toFixed(1);
+        // ============================================================
+        // PRESERVE THE BEARING VALUE
+        // ============================================================
+        let currentBearingValue = null;
+        if (bearingDisplay) {
+            const text = bearingDisplay.textContent;
+            if (text !== '—' && text !== '') {
+                currentBearingValue = text;
+            }
         }
 
-        // Calculate
-        const elevation = calculateElevation(clampedRange, charge);
+        const range = parseFloat(rangeInput.value) || 0;
+        
+        let minCharge = 6;
+        for (let c = 1; c <= 6; c++) {
+            if (range <= getMaxRange(c)) {
+                minCharge = c;
+                break;
+            }
+        }
+        
+        if (range > getMaxRange(selectedCharge)) {
+            selectedCharge = minCharge;
+            updateChargeSelector(range);
+        }
+        
+        const charge = selectedCharge;
+        const elevation = calculateElevation(range, charge);
         const flightTime = calculateFlightTime(elevation, charge);
 
-        // Update displays
-        elevationDisplay.textContent = elevation.toFixed(2) + '°';
-        flightTimeDisplay.textContent = flightTime.toFixed(2) + ' s';
-        maxRangeDisplay.textContent = maxRange.toFixed(1) + ' km';
+        if (elevationDisplay) elevationDisplay.textContent = elevation.toFixed(2) + '°';
+        if (flightTimeDisplay) flightTimeDisplay.textContent = flightTime.toFixed(2) + ' s';
 
-        // Update info with range status
-        const isMax = Math.abs(clampedRange - maxRange) < 0.01;
-        const infoMsg = isMax 
-            ? '⚡ At maximum range! Elevation = 60° (forced by game)'
-            : `<svg class="icon-sm"><use href="images/icons.svg#icon-lightbulb"></use></svg> Elevation = (${clampedRange.toFixed(1)} × 12) / ${charge} = ${elevation.toFixed(2)}°`;
-        infoDisplay.textContent = infoMsg;
-        infoDisplay.style.borderLeftColor = isMax ? '#ffd93d' : '#4a7a8a';
+        // ============================================================
+        // RESTORE THE BEARING VALUE
+        // ============================================================
+        if (bearingDisplay && currentBearingValue) {
+            bearingDisplay.textContent = currentBearingValue;
+            bearingDisplay.style.color = 'var(--accent-amber)';
+        }
+
+        updateChargeSelector(range);
     }
 
-    // --- Flight Time Calculator (Reverse: Time + Range → Charge) ---
     function updateFlightTimeReverse() {
         const timeInput = document.getElementById('flightTargetTime');
         const rangeInput = document.getElementById('flightTargetRange');
         const elevationDisplay = document.getElementById('reverseElevation');
         const chargeDisplay = document.getElementById('reverseCharge');
         const flightTimeDisplay = document.getElementById('reverseFlightTime');
-        const maxRangeDisplay = document.getElementById('reverseMaxRangeDisplay');
-        const t60Display = document.getElementById('reverseT60Display');
-        const feasibleDisplay = document.getElementById('reverseFeasibleDisplay');
-        const infoDisplay = document.getElementById('flightReverseInfo');
+        const bearingDisplay = document.getElementById('flightBearing');
 
         if (!timeInput || !rangeInput) return;
+
+        // ============================================================
+        // PRESERVE THE BEARING VALUE
+        // ============================================================
+        let currentBearingValue = null;
+        if (bearingDisplay) {
+            const text = bearingDisplay.textContent;
+            if (text !== '—' && text !== '') {
+                currentBearingValue = text;
+            }
+        }
 
         const targetTime = parseFloat(timeInput.value) || 0;
         const targetRange = parseFloat(rangeInput.value) || 0;
 
-        // Run reverse calculation
         const result = reverseCalculateCharge(targetTime, targetRange);
 
         if (result.chargeFound && result.elevation !== null) {
-            // Show results
-            elevationDisplay.textContent = result.elevation.toFixed(2) + '°';
-            chargeDisplay.textContent = result.charge;
-            flightTimeDisplay.textContent = result.flightTime.toFixed(2) + ' s';
-            maxRangeDisplay.textContent = result.maxRange.toFixed(1) + ' km';
-            t60Display.textContent = result.t60.toFixed(2) + ' s';
-
-            // Feasibility status
-            if (result.feasible) {
-                feasibleDisplay.textContent = '<svg class="icon-sm"><use href="images/icons.svg#icon-check-circle"></use></svg> Yes';
-                feasibleDisplay.className = 'feasible-yes';
-                infoDisplay.textContent = `<svg class="icon-sm"><use href="images/icons.svg#icon-check-circle"></use></svg> Optimal: Charge ${result.charge}, Elevation ${result.elevation.toFixed(2)}°, Actual flight time ${result.flightTime.toFixed(2)}s (target: ${targetTime.toFixed(1)}s, error: ${(result.error * 100).toFixed(0)}ms)`;
-                infoDisplay.style.borderLeftColor = '#88ffaa';
-            } else {
-                feasibleDisplay.textContent = '<svg class="icon-sm"><use href="images/icons.svg#icon-alert-triangle"></use></svg> Approx';
-                feasibleDisplay.className = 'feasible-maybe';
-                infoDisplay.textContent = `<svg class="icon-sm"><use href="images/icons.svg#icon-alert-triangle"></use></svg> Closest match: Charge ${result.charge}, Elevation ${result.elevation.toFixed(2)}°, Actual flight time ${result.flightTime.toFixed(2)}s (target: ${targetTime.toFixed(1)}s, error: ${(result.error * 100).toFixed(0)}ms) - Try adjusting time or range`;
-                infoDisplay.style.borderLeftColor = '#ffd93d';
-            }
-
-            // Color the results
-            elevationDisplay.style.color = result.feasible ? '#88ffaa' : '#ffd93d';
-            chargeDisplay.style.color = result.feasible ? '#88ffaa' : '#ffd93d';
+            if (elevationDisplay) elevationDisplay.textContent = result.elevation.toFixed(2) + '°';
+            if (chargeDisplay) chargeDisplay.textContent = result.charge;
+            if (flightTimeDisplay) flightTimeDisplay.textContent = result.flightTime.toFixed(2) + ' s';
+            
+            if (elevationDisplay) elevationDisplay.style.color = result.feasible ? '#88ffaa' : '#ffd93d';
+            if (chargeDisplay) chargeDisplay.style.color = result.feasible ? '#88ffaa' : '#ffd93d';
             
         } else {
-            // No charge can achieve this combination
-            elevationDisplay.textContent = '—';
-            chargeDisplay.textContent = '—';
-            flightTimeDisplay.textContent = '—';
-            maxRangeDisplay.textContent = '—';
-            t60Display.textContent = '—';
-            feasibleDisplay.textContent = '<svg class="icon-sm"><use href="images/icons.svg#icon-close"></use></svg> No';
-            feasibleDisplay.className = 'feasible-no';
-            infoDisplay.textContent = '<svg class="icon-sm"><use href="images/icons.svg#icon-close"></use></svg> No powder charge can achieve this combination of flight time and range. Try adjusting values.';
-            infoDisplay.style.borderLeftColor = '#ff6644';
+            if (elevationDisplay) elevationDisplay.textContent = '—';
+            if (chargeDisplay) chargeDisplay.textContent = '—';
+            if (flightTimeDisplay) flightTimeDisplay.textContent = '—';
             
-            elevationDisplay.style.color = '#ff6644';
-            chargeDisplay.style.color = '#ff6644';
+            if (elevationDisplay) elevationDisplay.style.color = '#ff6644';
+            if (chargeDisplay) chargeDisplay.style.color = '#ff6644';
+        }
+
+        // ============================================================
+        // RESTORE THE BEARING VALUE
+        // ============================================================
+        if (bearingDisplay && currentBearingValue) {
+            bearingDisplay.textContent = currentBearingValue;
+            bearingDisplay.style.color = 'var(--accent-amber)';
         }
     }
 
+    let currentBearing = null;
+
+    function setCurrentBearing(bearing) {
+        currentBearing = bearing;
+    }
+    window.setCurrentBearing = setCurrentBearing;
+    
     // --- Event Listeners for Calculators ---
 
-    // Ballistic calculator inputs
+
+
     document.getElementById('ballisticRange')?.addEventListener('input', updateBallisticCalculator);
-    document.getElementById('ballisticCharge')?.addEventListener('change', updateBallisticCalculator);
+
+    // ============================================================
+    // FIRING SOLUTIONS
+    // ============================================================
+
+    let firingSolutions = [];
+    let selectedSolutionId = null;
+
+    /**
+     * Generate a firing solution card from current calculator state
+     */
+    function generateFiringSolution(source = 'ballistic') {
+        let range, shellType, charge, elevation, flightTime, bearing;
+        
+        if (source === 'ballistic') {
+            const rangeInput = document.getElementById('ballisticRange');
+            const shellSelect = document.getElementById('shellType');
+            const elevationDisplay = document.getElementById('ballisticElevation');
+            const flightTimeDisplay = document.getElementById('ballisticFlightTime');
+            const bearingDisplay = document.getElementById('ballisticBearing');
+            
+            range = parseFloat(rangeInput?.value) || 0;
+            shellType = shellSelect?.value || 'HE';
+            elevation = parseFloat(elevationDisplay?.textContent) || 0;
+            flightTime = parseFloat(flightTimeDisplay?.textContent) || 0;
+            charge = selectedCharge;
+            
+            // Get bearing from display or currentBearing
+            if (bearingDisplay) {
+                const bearingText = bearingDisplay.textContent;
+                const cleanBearing = parseFloat(bearingText.replace(/[^0-9.\-]/g, ''));
+                bearing = !isNaN(cleanBearing) ? cleanBearing : currentBearing;
+            } else {
+                bearing = currentBearing;
+            }
+        } else {
+            const rangeInput = document.getElementById('flightTargetRange');
+            const shellSelect = document.getElementById('flightShellType');
+            const elevationDisplay = document.getElementById('reverseElevation');
+            const flightTimeDisplay = document.getElementById('reverseFlightTime');
+            const chargeDisplay = document.getElementById('reverseCharge');
+            const bearingDisplay = document.getElementById('flightBearing');
+            
+            range = parseFloat(rangeInput?.value) || 0;
+            shellType = shellSelect?.value || 'HE';
+            elevation = parseFloat(elevationDisplay?.textContent) || 0;
+            flightTime = parseFloat(flightTimeDisplay?.textContent) || 0;
+            charge = parseInt(chargeDisplay?.textContent) || 0;
+            
+            // Get bearing from display or currentBearing
+            if (bearingDisplay) {
+                const bearingText = bearingDisplay.textContent;
+                const cleanBearing = parseFloat(bearingText.replace(/[^0-9.\-]/g, ''));
+                bearing = !isNaN(cleanBearing) ? cleanBearing : currentBearing;
+            } else {
+                bearing = currentBearing;
+            }
+        }
+        
+        // Create solution object
+        const solution = {
+            id: Date.now(),
+            range: range,
+            shellType: shellType,
+            charge: charge,
+            elevation: elevation,
+            flightTime: flightTime,
+            bearing: bearing,
+            source: source,
+            done: false,
+            createdAt: new Date().toISOString()
+        };
+        
+        firingSolutions.push(solution);
+        renderFiringSolutions();
+        showToast(`Firing solution generated: ${shellType} @ ${range.toFixed(1)}km`, 'success');
+    }
+
+    /**
+     * Render firing solution cards
+     */
+    function renderFiringSolutions() {
+        const container = document.getElementById('firingCardsContainer');
+        if (!container) return;
+        
+        if (firingSolutions.length === 0) {
+            container.innerHTML = `<p class="empty-message" style="grid-column:1/-1; text-align:center; padding:20px 0;">No firing solutions yet. Generate a card from the calculator above.</p>`;
+            return;
+        }
+        
+        let html = '';
+        firingSolutions.forEach((solution, index) => {
+            const isDone = solution.done;
+            const chargeBlocks = [];
+            for (let i = 1; i <= 6; i++) {
+                const active = i <= solution.charge;
+                chargeBlocks.push(`<span class="card-charge-block ${active ? 'active' : 'inactive'}">${i}</span>`);
+            }
+            
+            html += `
+                <div class="firing-card ${isDone ? 'done' : ''}" data-id="${solution.id}" data-index="${index}">
+                    ${isDone ? '<div class="done-overlay">✓</div>' : ''}
+                    <div class="card-header">
+                        <span class="card-shell-type">${solution.shellType}</span>
+                        <div class="card-actions">
+                            <button class="done-btn" onclick="toggleSolutionDone(${solution.id})" title="${isDone ? 'Mark as not done' : 'Mark as done'}">
+                                <svg class="icon-sm"><use href="images/icons.svg#icon-check-circle"></use></svg>
+                            </button>
+                            <button class="delete-btn" onclick="deleteSolution(${solution.id})" title="Delete">
+                                <svg class="icon-sm"><use href="images/icons.svg#icon-close"></use></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-details">
+                        <span class="detail-item">
+                            <span class="label">Range:</span>
+                            <span class="value">${solution.range.toFixed(1)} km</span>
+                        </span>
+                        <span class="detail-item">
+                            <span class="label">Elevation:</span>
+                            <span class="value">${solution.elevation.toFixed(1)}°</span>
+                        </span>
+                        <span class="detail-item">
+                            <span class="label">Flight Time:</span>
+                            <span class="value">${solution.flightTime.toFixed(1)}s</span>
+                        </span>
+                        ${solution.bearing !== null ? `
+                        <span class="detail-item">
+                            <span class="label">Bearing:</span>
+                            <span class="value">${solution.bearing.toFixed(1)}°</span>
+                        </span>
+                        ` : ''}
+                    </div>
+                    <div class="card-charge-display">
+                        ${chargeBlocks.join('')}
+                        <span style="font-size:0.7rem; color:var(--text-muted); margin-left:4px;">(${solution.charge} charges)</span>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
+
+    /**
+     * Toggle done status of a firing solution
+     */
+    function toggleSolutionDone(id) {
+        const solution = firingSolutions.find(s => s.id === id);
+        if (solution) {
+            solution.done = !solution.done;
+            renderFiringSolutions();
+            showToast(solution.done ? 'Solution marked as done' : 'Solution unmarked', 'info');
+        }
+    }
+
+    /**
+     * Delete a firing solution
+     */
+    function deleteSolution(id) {
+        const index = firingSolutions.findIndex(s => s.id === id);
+        if (index > -1) {
+            firingSolutions.splice(index, 1);
+            renderFiringSolutions();
+            showToast('Firing solution deleted', 'success');
+        }
+    }
+
+    /**
+     * Clear all firing solutions
+     */
+    function clearAllSolutions() {
+        if (firingSolutions.length === 0) {
+            showToast('No firing solutions to clear', 'info');
+            return;
+        }
+        if (confirm('Clear all firing solutions?')) {
+            firingSolutions = [];
+            renderFiringSolutions();
+            showToast('All firing solutions cleared', 'success');
+        }
+    }
+
+    // Make functions globally accessible
+    window.toggleSolutionDone = toggleSolutionDone;
+    window.deleteSolution = deleteSolution;
 
     // Flight time calculator (reverse) inputs
     document.getElementById('flightTargetTime')?.addEventListener('input', updateFlightTimeReverse);
@@ -304,12 +629,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // --- Initial calculator updates ---
-    setTimeout(() => {
-        updateBallisticCalculator();
-        updateFlightTimeReverse();
-    }, 100);
-
     // --- Setup UI Events ---
 
     // Marker type buttons
@@ -329,11 +648,11 @@ document.addEventListener('DOMContentLoaded', function() {
             gridMapper.setTool(this.dataset.tool);
             
             const toolLabels = {
-                select: '<svg class="icon-sm"><use href="images/icons.svg#icon-mouse-pointer"></use></svg> Click to select markers, drag to move them',
-                drag: '<svg class="icon-sm"><use href="images/icons.svg#icon-hand"></use></svg> Drag to pan around the map',
-                intelPen: '<svg class="icon-sm"><use href="images/icons.svg#icon-pencil-line"></use></svg> Click and drag to draw an Intel arrow',
-                vectorPen: '<svg class="icon-sm"><use href="images/icons.svg#icon-pen-line"></use></svg> Click and drag to draw a Vector arrow',
-                compass: '<svg class="icon-sm"><use href="images/icons.svg#icon-drafting-compass"></use></svg> Click and drag to draw a distance circle'
+                select: 'Click to select markers, drag to move them',
+                drag: 'Drag to pan around the map',
+                intelPen: 'Click and drag to draw an Intel arrow',
+                vectorPen: 'Click and drag to draw a Vector arrow',
+                compass: 'Click and drag to draw a distance circle'
             };
             if (elements.drawingInfo) {
                 elements.drawingInfo.innerHTML = `<p style="color:#88bbff; font-size:0.8rem;">${toolLabels[this.dataset.tool] || ''}</p>`;
@@ -430,20 +749,8 @@ document.addEventListener('DOMContentLoaded', function() {
     gridMapper.updateFontSizeDisplay();
 
     // Triangulation Tab
-    document.querySelectorAll('.intel-tab').forEach(tab => {
-        tab.addEventListener('click', function() {
-            document.querySelectorAll('.intel-tab').forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-            
-            document.querySelectorAll('.intel-tab-content').forEach(c => c.style.display = 'none');
-            const target = document.getElementById(this.dataset.tab === 'marker' ? 'intelTabMarker' : 'intelTabTriangulate');
-            if (target) target.style.display = 'block';
-            
-            if (this.dataset.tab === 'triangulate') {
-                gridMapper.updateTriangulateDropdowns();
-            }
-        });
-    });
+    gridMapper.updateTriangulateDropdowns();
+
 
     // Add triangulate item
     document.getElementById('addTriangulateItemBtn').addEventListener('click', () => {
@@ -504,4 +811,40 @@ document.addEventListener('DOMContentLoaded', function() {
         gridMapper.removeAllMeasurements();
     });
 
+    // ============================================================
+    // INITIALIZE CHARGE SELECTOR
+    // ============================================================
+
+    // Initialize charge selector
+    initChargeSelector();
+
+    // Set initial charge to 6
+    selectedCharge = 6;
+    updateChargeSelector(5);
+
+    // --- Initial calculator updates ---
+    setTimeout(() => {
+        updateBallisticCalculator();
+        updateFlightTimeReverse();
+    }, 100);
+
+    // Close triangulation results
+    document.getElementById('closeTriangulationResults')?.addEventListener('click', () => {
+        gridMapper.closeTriangulationResults();
+    });
+
+    // Generate card buttons
+    document.getElementById('generateCardBtn')?.addEventListener('click', () => {
+        generateFiringSolution('ballistic');
+    });
+
+    document.getElementById('generateFlightCardBtn')?.addEventListener('click', () => {
+        generateFiringSolution('flighttime');
+    });
+
+    // Clear all cards
+    document.getElementById('clearAllCardsBtn')?.addEventListener('click', clearAllSolutions);
+
+    // Initial render of firing solutions
+    renderFiringSolutions();
 });

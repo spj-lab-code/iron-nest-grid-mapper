@@ -69,31 +69,79 @@
                 </div>
 
                 <!-- ============================================================ -->
-                <!-- CALCULATOR SECTION - Below the grid                          -->
+                <!-- TRIANGULATION RESULTS -->
+                <!-- ============================================================ -->
+                <div id="triangulationResultsContainer" style="display:none; margin-top:10px;">
+                    <div style="background: var(--bg-surface); border: 1px solid var(--border-accent); border-radius: 6px; padding: 15px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-subtle); padding-bottom:8px;">
+                            <h3 style="color: var(--text-primary); font-size:0.9rem; margin:0; display:flex; align-items:center; gap:6px;">
+                                <svg class="icon-sm"><use href="images/icons.svg#icon-calculator"></use></svg> Triangulation Results
+                            </h3>
+                            <button id="closeTriangulationResults" class="btn btn-sm" style="background:rgba(255,77,77,0.12); border-color:rgba(255,77,77,0.3); color:var(--accent-rose);">
+                                <svg class="icon-sm"><use href="images/icons.svg#icon-close"></use></svg> Cancel
+                            </button>
+                        </div>
+                        <div id="triangulationResultsDetails" style="min-height:60px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================================ -->
+                <!-- CALCULATOR SECTION -->
                 <!-- ============================================================ -->
                 <div class="calculator-section">
-                    <div class="calculator-tabs">
-                        <button class="calculator-tab active" data-tab="ballistic"><svg class="icon-sm"><use href="images/icons.svg#icon-crosshair"></use></svg> Ballistic</button>
-                        <button class="calculator-tab" data-tab="flighttime"><svg class="icon-sm"><use href="images/icons.svg#icon-timer"></use></svg> Flight Time</button>
+                    <div style="display:flex; align-items:center; gap:15px; padding:0 15px 10px 15px; border-bottom:1px solid #2a3a4a; margin-bottom:10px; flex-wrap:wrap;">
+                        <h3 style="color: var(--accent-primary); font-size:0.9rem; margin:0; display:flex; align-items:center; gap:6px; border-bottom:none; padding-bottom:0;">
+                            <svg class="icon-sm"><use href="images/icons.svg#icon-calculator"></use></svg> CALCULATOR
+                        </h3>
+                        <div class="calculator-tabs" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">
+                            <button class="calculator-tab active" data-tab="ballistic"><svg class="icon-sm"><use href="images/icons.svg#icon-crosshair"></use></svg> Ballistic</button>
+                            <button class="calculator-tab" data-tab="flighttime"><svg class="icon-sm"><use href="images/icons.svg#icon-timer"></use></svg> Flight Time</button>
+                        </div>
                     </div>
 
                     <!-- Ballistic Calculator -->
                     <div id="calcTabBallistic" class="calculator-tab-content active">
                         <div class="calculator-panel">
                             <div class="calc-row">
-                                <div class="calc-group">
+                                <div class="calc-group" style="flex:1;">
                                     <label>Range (km)</label>
                                     <input type="number" id="ballisticRange" min="0" max="30" step="0.1" value="5">
                                 </div>
-                                <div class="calc-group">
+                                <div class="calc-group" style="flex:1;">
                                     <label>Powder Charge</label>
-                                    <select id="ballisticCharge">
-                                        <option value="1">1 (5 km max)</option>
-                                        <option value="2">2 (10 km max)</option>
-                                        <option value="3">3 (15 km max)</option>
-                                        <option value="4">4 (20 km max)</option>
-                                        <option value="5">5 (25 km max)</option>
-                                        <option value="6" selected>6 (30 km max)</option>
+                                    <div id="chargeSelector" class="charge-selector">
+                                        <button class="charge-btn" data-charge="1" title="1 charge (5 km max)">1</button>
+                                        <button class="charge-btn" data-charge="2" title="2 charges (10 km max)">2</button>
+                                        <button class="charge-btn" data-charge="3" title="3 charges (15 km max)">3</button>
+                                        <button class="charge-btn" data-charge="4" title="4 charges (20 km max)">4</button>
+                                        <button class="charge-btn" data-charge="5" title="5 charges (25 km max)">5</button>
+                                        <button class="charge-btn" data-charge="6" title="6 charges (30 km max)">6</button>
+                                    </div>
+                                </div>
+                                <div class="calc-group" style="flex:0.8; min-width:100px;">
+                                    <label>Shell Type</label>
+                                    <select id="shellType">
+                                        <option value="HE">HE</option>
+                                        <option value="AP">AP</option>
+                                        <option value="APHE">APHE</option>
+                                        <option value="ATMC">ATMC</option>
+                                        <option value="CLMN">CLMN</option>
+                                        <option value="CYAN">CYAN</option>
+                                        <option value="DRIL">DRIL</option>
+                                        <option value="EQKE">EQKE</option>
+                                        <option value="FLCH">FLCH</option>
+                                        <option value="HCHE">HCHE</option>
+                                        <option value="INCN">INCN</option>
+                                        <option value="LE">LE</option>
+                                        <option value="PCLM">PCLM</option>
+                                        <option value="PHGN">PHGN</option>
+                                        <option value="PRPG">PRPG</option>
+                                        <option value="SMK">SMK</option>
+                                        <option value="STAR">STAR</option>
+                                        <option value="TEAR">TEAR</option>
+                                        <option value="THRM">THRM</option>
+                                        <option value="WP">WP</option>
                                     </select>
                                 </div>
                             </div>
@@ -106,13 +154,15 @@
                                     <span class="calc-result-label">Flight Time</span>
                                     <span class="calc-result-value" id="ballisticFlightTime">7.14 s</span>
                                 </div>
-                                <div class="calc-result-item">
-                                    <span class="calc-result-label">Max Range</span>
-                                    <span class="calc-result-value" id="ballisticMaxRange">30.0 km</span>
+                                <div class="calc-result-item" style="flex:1.2;">
+                                    <span class="calc-result-label">Bearing</span>
+                                    <span class="calc-result-value" id="ballisticBearing" style="color:var(--text-primary);">—</span>
                                 </div>
-                            </div>
-                            <div class="calc-info" id="ballisticInfo">
-                                <svg class="icon-sm"><use href="images/icons.svg#icon-lightbulb"></use></svg> Elevation is forced by the game: E = (Range × 12) / Charge
+                                <div class="calc-result-item" style="flex:0.6; min-width:80px; background:transparent; border:none; display:flex; align-items:center; justify-content:flex-end; padding:0;">
+                                    <button id="generateCardBtn" class="btn" style="background:rgba(0,230,118,0.15); border-color:var(--accent-emerald); color:var(--accent-emerald); width:100%; height:36px; display:flex; align-items:center; justify-content:center; gap:4px; font-size:0.75rem; padding:0 12px;">
+                                        <svg class="icon-sm"><use href="images/icons.svg#icon-add"></use></svg> Generate Card
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -120,16 +170,40 @@
                     <!-- Flight Time Calculator -->
                     <div id="calcTabFlightTime" class="calculator-tab-content" style="display:none;">
                         <div class="calculator-panel">
-                            <!-- Reverse Mode: User enters Time + Range, gets Charge + Elevation -->
                             <div id="flightModeReverse" class="calc-mode-content active">
                                 <div class="calc-row">
-                                    <div class="calc-group">
+                                    <div class="calc-group" style="flex:1;">
                                         <label>Desired Flight Time (seconds)</label>
                                         <input type="number" id="flightTargetTime" min="0" max="60" step="0.1" value="20">
                                     </div>
-                                    <div class="calc-group">
+                                    <div class="calc-group" style="flex:1;">
                                         <label>Range (km)</label>
                                         <input type="number" id="flightTargetRange" min="0" max="30" step="0.1" value="10">
+                                    </div>
+                                    <div class="calc-group" style="flex:0.8; min-width:100px;">
+                                        <label>Shell Type</label>
+                                        <select id="flightShellType">
+                                            <option value="HE">HE</option>
+                                            <option value="AP">AP</option>
+                                            <option value="APHE">APHE</option>
+                                            <option value="ATMC">ATMC</option>
+                                            <option value="CLMN">CLMN</option>
+                                            <option value="CYAN">CYAN</option>
+                                            <option value="DRIL">DRIL</option>
+                                            <option value="EQKE">EQKE</option>
+                                            <option value="FLCH">FLCH</option>
+                                            <option value="HCHE">HCHE</option>
+                                            <option value="INCN">INCN</option>
+                                            <option value="LE">LE</option>
+                                            <option value="PCLM">PCLM</option>
+                                            <option value="PHGN">PHGN</option>
+                                            <option value="PRPG">PRPG</option>
+                                            <option value="SMK">SMK</option>
+                                            <option value="STAR">STAR</option>
+                                            <option value="TEAR">TEAR</option>
+                                            <option value="THRM">THRM</option>
+                                            <option value="WP">WP</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="calc-row calc-results">
@@ -142,29 +216,38 @@
                                         <span class="calc-result-value" id="reverseCharge">—</span>
                                     </div>
                                     <div class="calc-result-item">
-                                        <span class="calc-result-label">Flight Time</span>
+                                        <span class="calc-result-label">Actual Flight Time</span>
                                         <span class="calc-result-value" id="reverseFlightTime">20.00 s</span>
                                     </div>
-                                </div>
-                                <div class="calc-row" style="margin-top:8px;">
-                                    <div class="calc-group" style="flex:1;">
-                                        <label>Max Range for Charge</label>
-                                        <span id="reverseMaxRangeDisplay" style="color:#b0c4de; font-family:monospace; font-size:1rem;">—</span>
+                                    <div class="calc-result-item" style="flex:1.2;">
+                                        <span class="calc-result-label">Bearing</span>
+                                        <span class="calc-result-value" id="flightBearing" style="color:var(--text-primary);">—</span>
                                     </div>
-                                    <div class="calc-group" style="flex:1;">
-                                        <label>T60 for Charge</label>
-                                        <span id="reverseT60Display" style="color:#b0c4de; font-family:monospace; font-size:1rem;">—</span>
+                                    <div class="calc-result-item" style="flex:0.6; min-width:80px; background:transparent; border:none; display:flex; align-items:center; justify-content:flex-end; padding:0;">
+                                        <button id="generateFlightCardBtn" class="btn" style="background:rgba(0,230,118,0.15); border-color:var(--accent-emerald); color:var(--accent-emerald); width:100%; height:36px; display:flex; align-items:center; justify-content:center; gap:4px; font-size:0.75rem; padding:0 12px;">
+                                            <svg class="icon-sm"><use href="images/icons.svg#icon-add"></use></svg> Generate Card
+                                        </button>
                                     </div>
-                                    <div class="calc-group" style="flex:1;">
-                                        <label>Feasible?</label>
-                                        <span id="reverseFeasibleDisplay" style="font-family:monospace; font-size:1rem;">—</span>
-                                    </div>
-                                </div>
-                                <div class="calc-info" id="flightReverseInfo">
-                                    <svg class="icon-sm"><use href="images/icons.svg#icon-lightbulb"></use></svg> Enter desired flight time and range. Calculator finds the optimal powder charge and required elevation.
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- ============================================================ -->
+                <!-- FIRING SOLUTION CARDS -->
+                <!-- ============================================================ -->
+                <div class="firing-solutions-section" style="margin-top:15px; padding-top:15px; border-top:1px solid var(--border-subtle);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid #2a3a4a; padding: 0 20px 10px;">
+                        <h3 style="color: var(--text-primary); font-size:0.9rem; margin:0; display:flex; align-items:center; gap:6px; border-bottom:none; padding-bottom:0;">
+                            <svg class="icon-sm"><use href="images/icons.svg#icon-target"></use></svg> FIRING SOLUTIONS
+                        </h3>
+                        <button id="clearAllCardsBtn" class="btn btn-sm" style="background:#3a2a2a; color:#ff8866; border:1px solid #8a3a3a; border-radius:3px; cursor:pointer; padding:2px 10px; font-size:0.7rem; font-family:inherit;">
+                            <svg class="icon-sm"><use href="images/icons.svg#icon-trash"></use></svg> Clear Cards
+                        </button>
+                    </div>
+                    <div id="firingCardsContainer" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; min-height:60px; padding: 0 20px 30px">
+                        <p class="empty-message" style="grid-column:1/-1; text-align:center; padding:20px 0;">No firing solutions yet. Generate a card from the calculator above.</p>
                     </div>
                 </div>
             </div>
@@ -183,49 +266,36 @@
                 <!-- Intel Display Section -->
                 <div class="panel-section intel-section">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid #2a3a4a; padding-bottom:8px;">
-                        <h3 class="intel-title" style="margin:0; border-bottom:none; padding-bottom:0;"><svg class="icon-sm"><use href="images/icons.svg#icon-information"></use></svg> Intel</h3>
+                        <h3 class="intel-title" style="margin:0; border-bottom:none; padding-bottom:0;">
+                            <svg class="icon-sm"><use href="images/icons.svg#icon-radius"></use></svg> Triangulate
+                        </h3>
                         <button id="removeAllIntelBtn" class="btn btn-sm" style="background:#3a2a2a; color:#ff8866; border:1px solid #8a3a3a; border-radius:3px; cursor:pointer; padding:2px 10px; font-size:0.7rem; font-family:inherit;">
-                            <svg class="icon-sm"><use href="images/icons.svg#icon-trash"></use></svg> Remove All Intel
+                            <svg class="icon-sm"><use href="images/icons.svg#icon-trash"></use></svg> Clear Intel
                         </button>
                     </div>
                     
-                    <!-- Tab Navigation -->
-                    <div class="intel-tabs">
-                        <button class="intel-tab active" data-tab="marker">Per Marker</button>
-                        <button class="intel-tab" data-tab="triangulate"><svg class="icon-sm"><use href="images/icons.svg#icon-calculator"></use></svg> Triangulate</button>
-                    </div>
-                    
-                    <!-- Tab Content: Per Marker Intel -->
-                    <div id="intelTabMarker" class="intel-tab-content active">
-                        <div id="intelDisplay">
-                            <p class="empty-message">Select a point of interest to see intel</p>
+                    <!-- Triangulate Panel (always visible) -->
+                    <div id="triangulatePanel">
+                        <div class="form-group">
+                            <label>Create as:</label>
+                            <select id="triangulateTargetType">
+                                <option value="target"><svg class="icon-sm"><use href="images/icons.svg#icon-crosshair"></use></svg> Target</option>
+                                <option value="spotter"><svg class="icon-sm"><use href="images/icons.svg#icon-binoculars"></use></svg> Spotter</option>
+                                <option value="reference"><svg class="icon-sm"><use href="images/icons.svg#icon-flag"></use></svg> Reference Point</option>
+                                <option value="nest"><svg class="icon-sm"><use href="images/icons.svg#icon-star"></use></svg> Iron Nest</option>
+                            </select>
                         </div>
-                    </div>
-                    
-                    <!-- Tab Content: Triangulate -->
-                    <div id="intelTabTriangulate" class="intel-tab-content" style="display:none;">
-                        <div id="triangulatePanel">
-                            <div class="form-group">
-                                <label>Create as:</label>
-                                <select id="triangulateTargetType">
-                                    <option value="target"><svg class="icon-sm"><use href="images/icons.svg#icon-crosshair"></use></svg> Target</option>
-                                    <option value="spotter"><svg class="icon-sm"><use href="images/icons.svg#icon-binoculars"></use></svg> Spotter</option>
-                                    <option value="reference"><svg class="icon-sm"><use href="images/icons.svg#icon-flag"></use></svg> Reference Point</option>
-                                    <option value="nest"><svg class="icon-sm"><use href="images/icons.svg#icon-star"></use></svg> Iron Nest</option>
-                                </select>
-                            </div>
-                            
-                            <div id="triangulateItems">
-                            </div>
-                            
-                            <button id="addTriangulateItemBtn" class="btn btn-sm"><svg class="icon-sm"><use href="images/icons.svg#icon-add-circle"></use></svg> Add Intel Item</button>
-                            <button id="calculateTriangulateBtn" class="btn btn-primary" style="margin-top:10px; width:100%;"><svg class="icon-sm"><use href="images/icons.svg#icon-calculator"></use></svg> Calculate Intersection</button>
-                            
-                            <div id="triangulateResults" style="margin-top:10px; display:none;">
-                                <div style="background:#0a121a; padding:10px; border-radius:3px; border-left:3px solid #ffd93d;">
-                                    <div id="triangulateResultDetails"></div>
-                                    <button id="triangulateCreateMarkerBtn" class="btn btn-sm" style="margin-top:8px; background:#2a5a3a; color:#88ffaa;"><svg class="icon-sm"><use href="images/icons.svg#icon-add-circle"></use></svg> Create Marker</button>
-                                </div>
+                        
+                        <div id="triangulateItems">
+                        </div>
+                        
+                        <button id="addTriangulateItemBtn" class="btn btn-sm"><svg class="icon-sm"><use href="images/icons.svg#icon-add"></use></svg> Add Intel Item</button>
+                        <button id="calculateTriangulateBtn" class="btn btn-primary" style="margin-top:10px; width:100%;"><svg class="icon-sm"><use href="images/icons.svg#icon-calculator"></use></svg> Calculate Intersection</button>
+                        
+                        <div id="triangulateResults" style="margin-top:10px; display:none;">
+                            <div style="background:#0a121a; padding:10px; border-radius:3px; border-left:3px solid #ffd93d;">
+                                <div id="triangulateResultDetails"></div>
+                                <button id="triangulateCreateMarkerBtn" class="btn btn-sm" style="margin-top:8px; background:#2a5a3a; color:#88ffaa;"><svg class="icon-sm"><use href="images/icons.svg#icon-add"></use></svg> Create Marker</button>
                             </div>
                         </div>
                     </div>
@@ -237,22 +307,5 @@
     <script src="js/markers.js"></script>
     <script src="js/grid.js"></script>
     <script src="js/main.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch('images/icons.svg')
-                .then(r => r.text())
-                .then(text => {
-                    const div = document.createElement('div');
-                    div.innerHTML = text;
-                    const svg = div.querySelector('svg');
-                    if (svg) {
-                        svg.id = 'svg-sprite';
-                        svg.style.display = 'none';
-                        document.body.prepend(svg);
-                    }
-                })
-                .catch(e => console.warn('Could not load icons:', e));
-        });
-    </script>
 </body>
 </html>

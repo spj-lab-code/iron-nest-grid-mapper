@@ -35,9 +35,7 @@ class MarkerManager {
         if (col < 0 || col > 19 || row < 0 || row > 9) return null;
         if (subX < 0 || subX > 9 || subY < 0 || subY > 9) return null;
         
-        // ============================================================
-        // FIX: Return the CENTER of the subgrid cell (x.5:y.5)
-        // ============================================================
+        // Return the CENTER of the subgrid cell (x.5:y.5)
         return { 
             col: col, 
             row: row, 
@@ -57,9 +55,7 @@ class MarkerManager {
         let displaySubX = Math.min(Math.max(subX, 0), 9.99);
         let displaySubY = Math.min(Math.max(subY, 0), 9.99);
         
-        // ============================================================
-        // FIX: Display only whole numbers (floor the values)
-        // ============================================================
+        // Display only whole numbers (floor the values)
         const subXInt = Math.floor(displaySubX);
         const subYInt = Math.floor(displaySubY);
         
@@ -107,7 +103,7 @@ class MarkerManager {
             nest: 'Iron Nest',
             spotter: 'Spotter',
             target: 'Target',
-            reference: 'Reference Point'
+            reference: 'Reference'
         };
         return labels[type] || type;
     }
@@ -132,6 +128,28 @@ class MarkerManager {
         const used = [...this.usedSpotterNumbers].sort((a, b) => a - b);
         let nextNum = 1;
         for (const num of used) {
+            if (num === nextNum) {
+                nextNum++;
+            } else if (num > nextNum) {
+                break;
+            }
+        }
+        return nextNum;
+    }
+
+    /**
+     * Get the next available reference number (reuse deleted numbers)
+     */
+    getNextReferenceNumber() {
+        // Get all existing reference numbers
+        const existingNumbers = this.markers
+            .filter(m => m.type === 'reference')
+            .map(m => m.number)
+            .sort((a, b) => a - b);
+        
+        // Find the smallest missing number starting from 1
+        let nextNum = 1;
+        for (const num of existingNumbers) {
             if (num === nextNum) {
                 nextNum++;
             } else if (num > nextNum) {
@@ -172,19 +190,18 @@ class MarkerManager {
             number = 0;
             label = 'Iron Nest';
         } else if (type === 'spotter') {
-            // Get the next available spotter number
+            // Get the next available spotter number (reuse deleted)
             number = this.getNextSpotterNumber();
             this.usedSpotterNumbers.push(number);
             label = `Spotter #${number}`;
         } else if (type === 'target') {
-            // Targets get sequential numbers
+            // Targets get sequential numbers (don't reuse)
             number = this.nextTargetNumber++;
             label = `Target #${number}`;
         } else { // reference
-            // Reference points get sequential letters (A, B, C, ...)
-            this.counter[type] = (this.counter[type] || 0) + 1;
-            number = this.counter[type];
-            label = `Reference Point ${String.fromCharCode(64 + number)}`;
+            // Reference points get the smallest available number (reuse deleted)
+            number = this.getNextReferenceNumber();
+            label = `Reference ${String.fromCharCode(64 + number)}`;
         }
 
         // Create the marker object with floating subgrid
@@ -232,9 +249,7 @@ class MarkerManager {
         }
         if (updates.number !== undefined) marker.number = updates.number;
         
-        // ============================================================
         // CRITICAL FIX: Update color when type changes
-        // ============================================================
         if (updates.type !== undefined && updates.type !== marker.type) {
             marker.type = updates.type;
             marker.color = this.constructor.getTypeColor(updates.type);

@@ -584,27 +584,8 @@ class GridMapper {
             this.compassCircle = null;
         }
         
-        // Update cursor
-        let cursor = 'crosshair';
-        switch(tool) {
-            case 'select':
-                cursor = 'crosshair';
-                break;
-            case 'drag':
-                cursor = 'grab';
-                break;
-            case 'intelPen':
-                cursor = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Cline x1=\'2\' y1=\'22\' x2=\'10\' y2=\'14\' stroke=\'%23ffd93d\' stroke-width=\'2.5\'/%3E%3Cline x1=\'10\' y1=\'14\' x2=\'22\' y2=\'2\' stroke=\'%23ffd93d\' stroke-width=\'2.5\'/%3E%3Ccircle cx=\'10\' cy=\'14\' r=\'4\' fill=\'%23ffd93d\' stroke=\'%23fff\' stroke-width=\'1\'/%3E%3C/svg%3E") 0 22, crosshair';
-                break;
-            case 'vectorPen':
-                cursor = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Cline x1=\'2\' y1=\'22\' x2=\'10\' y2=\'14\' stroke=\'%23ff4444\' stroke-width=\'2.5\'/%3E%3Cline x1=\'10\' y1=\'14\' x2=\'22\' y2=\'2\' stroke=\'%23ff4444\' stroke-width=\'2.5\'/%3E%3Ccircle cx=\'10\' cy=\'14\' r=\'4\' fill=\'%23ff4444\' stroke=\'%23fff\' stroke-width=\'1\'/%3E%3C/svg%3E") 0 22, crosshair';
-                break;
-            case 'compass':
-                // Drafting compass cursor (upside-down V with circle)
-                cursor = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Ccircle cx=\'12\' cy=\'12\' r=\'10\' fill=\'none\' stroke=\'%23ffffff\' stroke-width=\'1.5\'/%3E%3Cline x1=\'5\' y1=\'20\' x2=\'12\' y2=\'8\' stroke=\'%23ffffff\' stroke-width=\'2\'/%3E%3Cline x1=\'19\' y1=\'20\' x2=\'12\' y2=\'8\' stroke=\'%23ffffff\' stroke-width=\'2\'/%3E%3Cline x1=\'12\' y1=\'8\' x2=\'12\' y2=\'4\' stroke=\'%23ffffff\' stroke-width=\'2\'/%3E%3Ccircle cx=\'12\' cy=\'3\' r=\'1.5\' fill=\'%23ffffff\'/%3E%3C/svg%3E") 12 12, crosshair';
-                break;
-        }
-        this.canvas.style.cursor = cursor;
+        // Update cursor using helper
+        this.canvas.style.cursor = this.getCursorForTool(tool);
         
         const info = document.getElementById('drawingInfo');
         if (info) {
@@ -613,10 +594,21 @@ class GridMapper {
                 drag: '<svg class="icon-sm"><use href="images/icons.svg#icon-hand"></use></svg> Drag to pan around the map',
                 intelPen: '<svg class="icon-sm"><use href="images/icons.svg#icon-pencil-line"></use></svg> Click and drag to draw an Intel arrow',
                 vectorPen: '<svg class="icon-sm"><use href="images/icons.svg#icon-pen-line"></use></svg> Click and drag to draw a Vector arrow',
-                compass: '<svg class="icon-sm"><use href="images/icons.svg#icon-drafting-compass"></use></svg> Click and drag to draw a distance circle (drafting compass)'
+                compass: '<svg class="icon-sm"><use href="images/icons.svg#icon-circle-dot-dashed"></use></svg> Click and drag to draw a distance circle'
             };
             info.innerHTML = `<p style="color:#88bbff; font-size:0.8rem;">${labels[tool] || ''}</p>`;
         }
+    }
+
+    getCursorForTool(tool) {
+        const cursors = {
+            'select': 'crosshair',
+            'drag': 'grab',
+            'intelPen': 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Cline x1=\'2\' y1=\'22\' x2=\'10\' y2=\'14\' stroke=\'%23ffd93d\' stroke-width=\'2.5\'/%3E%3Cline x1=\'10\' y1=\'14\' x2=\'22\' y2=\'2\' stroke=\'%23ffd93d\' stroke-width=\'2.5\'/%3E%3Ccircle cx=\'10\' cy=\'14\' r=\'4\' fill=\'%23ffd93d\' stroke=\'%23fff\' stroke-width=\'1\'/%3E%3C/svg%3E") 0 22, crosshair',
+            'vectorPen': 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Cline x1=\'2\' y1=\'22\' x2=\'10\' y2=\'14\' stroke=\'%23ff4444\' stroke-width=\'2.5\'/%3E%3Cline x1=\'10\' y1=\'14\' x2=\'22\' y2=\'2\' stroke=\'%23ff4444\' stroke-width=\'2.5\'/%3E%3Ccircle cx=\'10\' cy=\'14\' r=\'4\' fill=\'%23ff4444\' stroke=\'%23fff\' stroke-width=\'1\'/%3E%3C/svg%3E") 0 22, crosshair',
+            'compass': 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23ffffff\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M10.1 2.18a9.93 9.93 0 0 1 3.8 0\'/%3E%3Cpath d=\'M17.6 3.71a9.95 9.95 0 0 1 2.69 2.7\'/%3E%3Cpath d=\'M21.82 10.1a9.93 9.93 0 0 1 0 3.8\'/%3E%3Cpath d=\'M20.29 17.6a9.95 9.95 0 0 1-2.7 2.69\'/%3E%3Cpath d=\'M13.9 21.82a9.94 9.94 0 0 1-3.8 0\'/%3E%3Cpath d=\'M6.4 20.29a9.95 9.95 0 0 1-2.69-2.7\'/%3E%3Cpath d=\'M2.18 13.9a9.93 9.93 0 0 1 0-3.8\'/%3E%3Cpath d=\'M3.71 6.4a9.95 9.95 0 0 1 2.7-2.69\'/%3E%3Ccircle cx=\'12\' cy=\'12\' r=\'1\'/%3E%3C/svg%3E") 12 12, crosshair'
+        };
+        return cursors[tool] || 'crosshair';
     }
 
     // ==========================================
@@ -1331,8 +1323,11 @@ class GridMapper {
                 <div class="menu-item" data-action="editPosition" style="color:#4ecdc4;"><svg class="icon-sm"><use href="images/icons.svg#icon-pencil-line"></use></svg> Edit Marker</div>
                 <div class="menu-item" data-action="intel" style="color:#4ecdc4;">${hasIntel ? '<svg class="icon-sm"><use href="images/icons.svg#icon-information"></use></svg> Edit Intel' : '<svg class="icon-sm"><use href="images/icons.svg#icon-information"></use></svg> Add Intel'}</div>
             `;
+
+            if (hasIntel) {
+                html += `<div class="menu-item" data-action="removeIntel" style="color:#ff8866;"><svg class="icon-sm"><use href="images/icons.svg#icon-trash"></use></svg> Remove Intel</div>`;
+            }
             
-            // For Target markers: Add "Create Vector from Iron Nest" option
             if (isTarget) {
                 const nests = this.markerManager.getMarkersByType('nest');
                 if (nests.length > 0) {
@@ -1340,16 +1335,10 @@ class GridMapper {
                     html += `<div class="menu-item" data-action="createVector" style="color:#ff4444;">${label}</div>`;
                 }
             }
-            
-            if (hasIntel) {
-                html += `<div class="menu-item" data-action="removeIntel" style="color:#ff8866;"><svg class="icon-sm"><use href="images/icons.svg#icon-trash"></use></svg> Remove Intel</div>`;
-            }
+
             html += `<div class="menu-item" data-action="delete" style="color:#ff6644;"><svg class="icon-sm"><use href="images/icons.svg#icon-trash"></use></svg> Delete ${isNest ? 'Iron Nest' : 'Marker'}</div>`;
 
         } else if (item && item.type === 'freeDrawing') {
-            // Free drawings are now deleted directly in the contextmenu event listener
-            // So this part should never be reached for free drawings
-            // But keeping it as fallback
             const drawing = item.item;
             const isAuto = drawing.autoIntel;
             html = `
@@ -1967,7 +1956,7 @@ class GridMapper {
             <div style="display:flex; gap:12px; align-items:flex-start;">
                 <div class="form-group" style="flex:1; min-width:0; margin-bottom:0;">
                     <label style="display:flex; align-items:center; gap:4px; font-size:0.85rem; color:#8aacce; margin-bottom:4px;">
-                        <span><svg class="icon-sm"><use href="images/icons.svg#icon-pencil-line"></use></svg></span> Bearing <span style="color:#6a7a8a; font-size:0.65rem; font-weight:normal;">(0-360°)</span>
+                        <span><svg class="icon-sm"><use href="images/icons.svg#icon-angle"></use></svg></span> Bearing <span style="color:#6a7a8a; font-size:0.65rem; font-weight:normal;">(0-360°)</span>
                     </label>
                     <input type="number" id="intelBearing" min="0" max="360" step="0.1" placeholder="Optional" 
                         style="width:100%; padding:6px 10px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:inherit;">
@@ -1983,9 +1972,6 @@ class GridMapper {
                 </div>
             </div>
             
-            <div class="info-box" style="margin-top:12px; background:#0a121a; padding:8px; border-radius:3px; font-size:0.8rem; color:#6a7a8a;">
-                <svg class="icon-sm"><use href="images/icons.svg#icon-lightbulb"></use></svg> Add a bearing, distance, or both. You can add multiple intel entries per marker.
-            </div>
             <div class="btn-group" style="display:flex; gap:10px; margin-top:12px;">
                 <button id="saveIntelBtn" class="btn-save" style="flex:1; padding:8px; background:#2a5a3a; color:#88ffaa; border:1px solid #3a8a5a; border-radius:3px; cursor:pointer; font-family:inherit;"><svg class="icon-sm"><use href="images/icons.svg#icon-save"></use></svg> Add Intel</button>
                 <button id="cancelIntelBtn" class="btn-cancel" style="flex:1; padding:8px; background:#3a2a2a; color:#ff8866; border:1px solid #8a3a3a; border-radius:3px; cursor:pointer; font-family:inherit;">Cancel</button>
@@ -2090,57 +2076,163 @@ class GridMapper {
         
         const item = this.createTriangulateItem(index);
         container.appendChild(item);
+
+        this.updateRemoveButtons();
         
         // Event listeners for remove button
         item.querySelector('.btn-remove-triangulate').addEventListener('click', () => {
             if (container.children.length > 1) {
+                // Check if this is the first item and it has both bearing and distance
+                const firstItem = container.querySelector('.triangulate-item');
+                if (firstItem === item) {
+                    const bearingInput = item.querySelector('.triangulate-bearing');
+                    const distanceInput = item.querySelector('.triangulate-distance');
+                    const bearing = bearingInput.value !== '' ? parseFloat(bearingInput.value) : null;
+                    const distance = distanceInput.value !== '' ? parseFloat(distanceInput.value) : null;
+                    
+                    if (bearing !== null && distance !== null) {
+                        this.showToast('Cannot remove the first marker - it has both bearing and distance', 'warning');
+                        return;
+                    }
+                }
                 item.remove();
+                this.showToast('Intel item removed', 'info');
             } else {
                 this.showToast('Need at least one intel item', 'warning');
             }
         });
     }
 
-    createTriangulateItem(index) {
-        const item = document.createElement('div');
-        item.className = 'triangulate-item';
-        item.dataset.index = index;
-        item.innerHTML = `
-            <div class="form-group">
-                <label style="display:flex; align-items:center; gap:4px; font-size:0.85rem; color:#8aacce; margin-bottom:4px;">
-                    <span><svg class="icon-sm"><use href="images/icons.svg#icon-marker"></use></svg></span> Marker:
+createTriangulateItem(index) {
+    const item = document.createElement('div');
+    item.className = 'triangulate-item';
+    item.dataset.index = index;
+    item.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label style="display:flex; align-items:center; gap:4px; font-size:0.85rem; color:#8aacce; font-weight:600; margin:0;">
+                <span><svg class="icon-sm"><use href="images/icons.svg#icon-marker"></use></svg></span> Marker:
+            </label>
+            <button class="btn btn-sm btn-remove-triangulate" data-index="${index}" style="color:#ff6644; background:none; border:none; cursor:pointer; font-size:0.7rem; padding:2px 6px; border-radius:3px; transition:background 0.2s; visibility:${index === 0 ? 'hidden' : 'visible'}; display:inline-flex; align-items:center; gap:4px; min-width:60px; justify-content:flex-end;">
+                <svg class="icon-sm" style="color:var(--accent-rose);"><use href="images/icons.svg#icon-close"></use></svg> Remove
+            </button>
+        </div>
+        
+        <div class="form-group" style="margin-bottom:6px;">
+            <select class="triangulate-marker" data-index="${index}" style="width:100%; padding:6px 10px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:inherit; font-weight:500;">
+                <option value="">Select marker...</option>
+                ${this.markerManager.getAllMarkers().map(m => 
+                    `<option value="${m.id}">${m.label} (${m.gridRef})</option>`
+                ).join('')}
+            </select>
+        </div>
+        
+        <!-- Two-column layout for bearing and distance -->
+        <div style="display:flex; gap:8px; align-items:flex-start; margin-top:6px;">
+            <div class="form-group" style="flex:1; min-width:0; margin-bottom:0;">
+                <label style="display:flex; align-items:center; gap:4px; font-size:0.75rem; color:#8aacce; margin-bottom:3px;">
+                    <span><svg class="icon-sm"><use href="images/icons.svg#icon-angle"></use></svg></span> Bearing <span style="color:#6a7a8a; font-size:0.6rem;">(0-360°)</span>
                 </label>
-                <select class="triangulate-marker" data-index="${index}" style="width:100%; padding:6px 10px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:inherit;">
-                    <option value="">Select marker...</option>
-                    ${this.markerManager.getAllMarkers().map(m => 
-                        `<option value="${m.id}">${m.label} (${m.gridRef})</option>`
-                    ).join('')}
-                </select>
+                <input type="number" class="triangulate-bearing" data-index="${index}" min="0" max="360" step="0.1" placeholder="Optional" 
+                    style="width:100%; padding:4px 8px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:inherit; font-size:0.75rem;">
             </div>
             
-            <!-- Two-column layout for bearing and distance -->
-            <div style="display:flex; gap:8px; align-items:flex-start; margin-top:6px;">
-                <div class="form-group" style="flex:1; min-width:0; margin-bottom:0;">
-                    <label style="display:flex; align-items:center; gap:4px; font-size:0.75rem; color:#8aacce; margin-bottom:3px;">
-                        <span><svg class="icon-sm"><use href="images/icons.svg#icon-pencil-line"></use></svg></span> Bearing <span style="color:#6a7a8a; font-size:0.6rem;">(0-360°)</span>
-                    </label>
-                    <input type="number" class="triangulate-bearing" data-index="${index}" min="0" max="360" step="0.1" placeholder="Optional" 
-                        style="width:100%; padding:4px 8px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:inherit; font-size:0.75rem;">
-                </div>
-                
-                <div class="form-group" style="flex:1; min-width:0; margin-bottom:0;">
-                    <label style="display:flex; align-items:center; gap:4px; font-size:0.75rem; color:#8aacce; margin-bottom:3px;">
-                        <span><svg class="icon-sm"><use href="images/icons.svg#icon-drafting-compass"></use></svg></span> Distance <span style="color:#6a7a8a; font-size:0.6rem;">(km)</span>
-                    </label>
-                    <input type="number" class="triangulate-distance" data-index="${index}" min="0" step="0.1" placeholder="Optional" 
-                        style="width:100%; padding:4px 8px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:inherit; font-size:0.75rem;">
-                </div>
+            <div class="form-group" style="flex:1; min-width:0; margin-bottom:0;">
+                <label style="display:flex; align-items:center; gap:4px; font-size:0.75rem; color:#8aacce; margin-bottom:3px;">
+                    <span><svg class="icon-sm"><use href="images/icons.svg#icon-drafting-compass"></use></svg></span> Distance <span style="color:#6a7a8a; font-size:0.6rem;">(km)</span>
+                </label>
+                <input type="number" class="triangulate-distance" data-index="${index}" min="0" step="0.1" placeholder="Optional" 
+                    style="width:100%; padding:4px 8px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:inherit; font-size:0.75rem;">
             </div>
+        </div>
+    `;
+    
+    // ============================================================
+    // Clear error state when marker is selected
+    // ============================================================
+    const markerSelect = item.querySelector('.triangulate-marker');
+    markerSelect.addEventListener('change', function() {
+        if (this.value) {
+            this.classList.remove('error');
+        }
+    });
+    
+    // ============================================================
+    // Remove button logic
+    // ============================================================
+    const removeBtn = item.querySelector('.btn-remove-triangulate');
+    removeBtn.addEventListener('click', () => {
+        const container = document.getElementById('triangulateItems');
+        const items = container.querySelectorAll('.triangulate-item');
+        
+        // Check if this is the first item and it has both bearing and distance
+        const firstItem = container.querySelector('.triangulate-item');
+        if (firstItem === item) {
+            const bearingInput = item.querySelector('.triangulate-bearing');
+            const distanceInput = item.querySelector('.triangulate-distance');
+            const bearing = bearingInput.value !== '' ? parseFloat(bearingInput.value) : null;
+            const distance = distanceInput.value !== '' ? parseFloat(distanceInput.value) : null;
             
-            <button class="btn btn-sm btn-remove-triangulate" data-index="${index}" style="color:#ff6644; background:none; border:none; cursor:pointer; font-size:0.7rem; padding:4px 6px; border-radius:3px; transition:background 0.2s; margin-top:4px;"><svg class="icon-sm"><use href="images/icons.svg#icon-close"></use></svg> Remove</button>
-        `;
-        return item;
-    }
+            if (bearing !== null && distance !== null) {
+                this.showToast('Cannot remove the first marker - it has both bearing and distance', 'warning');
+                return;
+            }
+        }
+        
+        if (items.length > 1) {
+            item.remove();
+            this.showToast('Intel item removed', 'info');
+            // Update remove button visibility for remaining items
+            this.updateRemoveButtons();
+        } else {
+            this.showToast('Need at least one intel item', 'warning');
+        }
+    });
+    
+    // ============================================================
+    // Auto-remove second marker if first has both bearing AND distance
+    // ============================================================
+    const bearingInput = item.querySelector('.triangulate-bearing');
+    const distanceInput = item.querySelector('.triangulate-distance');
+    
+    const checkAndRemoveSecond = () => {
+        const bearing = bearingInput.value !== '' ? parseFloat(bearingInput.value) : null;
+        const distance = distanceInput.value !== '' ? parseFloat(distanceInput.value) : null;
+        
+        if (bearing !== null && distance !== null) {
+            // First marker has both - check if we have a second marker
+            const container = document.getElementById('triangulateItems');
+            const items = container.querySelectorAll('.triangulate-item');
+            if (items.length > 1) {
+                // Remove the second item
+                const secondItem = items[1];
+                if (secondItem) {
+                    secondItem.remove();
+                    this.showToast('Second marker removed - single marker with both bearing and distance is sufficient', 'info');
+                    this.updateRemoveButtons();
+                }
+            }
+        }
+    };
+    
+    bearingInput.addEventListener('input', checkAndRemoveSecond);
+    distanceInput.addEventListener('input', checkAndRemoveSecond);
+    
+    return item;
+}
+
+updateRemoveButtons() {
+    const container = document.getElementById('triangulateItems');
+    const items = container.querySelectorAll('.triangulate-item');
+    const removeBtns = container.querySelectorAll('.btn-remove-triangulate');
+    
+    removeBtns.forEach((btn, index) => {
+        if (items.length <= 1) {
+            btn.style.visibility = 'hidden';
+        } else {
+            btn.style.visibility = 'visible';
+        }
+    });
+}
 
     // ==========================================
     // FLOATING POINT GRID HELPERS
@@ -2214,18 +2306,52 @@ class GridMapper {
         const items = [];
         const itemElements = document.querySelectorAll('.triangulate-item');
         
+        let hasSelectedMarker = false;
+        let allMarkersSelected = true;
+        let missingMarkerIndex = -1;
+        
         console.log('Calculating triangulation with', itemElements.length, 'items');
         
-        for (const el of itemElements) {
+        // ============================================================
+        // First pass: Validate all marker selections
+        // ============================================================
+        let hasError = false;
+        for (let i = 0; i < itemElements.length; i++) {
+            const el = itemElements[i];
+            const markerSelect = el.querySelector('.triangulate-marker');
+            const markerId = markerSelect.value;
+            
+            // Reset any previous error states
+            markerSelect.classList.remove('error');
+            
+            if (!markerId) {
+                // Show error state - only red border
+                markerSelect.classList.add('error');
+                hasError = true;
+                missingMarkerIndex = i;
+            }
+        }
+        
+        if (hasError) {
+            const msg = missingMarkerIndex !== -1 
+                ? `Please select a marker for item #${missingMarkerIndex + 1}`
+                : 'Please select a marker for all items';
+            this.showToast(msg, 'warning');
+            return;
+        }
+        
+        // ============================================================
+        // Second pass: Collect the data
+        // ============================================================
+        for (let i = 0; i < itemElements.length; i++) {
+            const el = itemElements[i];
             const markerSelect = el.querySelector('.triangulate-marker');
             const bearingInput = el.querySelector('.triangulate-bearing');
             const distanceInput = el.querySelector('.triangulate-distance');
             
             const markerId = markerSelect.value;
-            if (!markerId) {
-                console.log('No marker selected for item');
-                continue;
-            }
+            
+            if (!markerId) continue;
             
             const bearing = bearingInput.value !== '' ? parseFloat(bearingInput.value) : null;
             const distance = distanceInput.value !== '' ? parseFloat(distanceInput.value) : null;
@@ -2251,13 +2377,16 @@ class GridMapper {
         }
         
         // ============================================================
-        // ALLOW SINGLE MARKER WITH BOTH BEARING AND DISTANCE
+        // VALIDATION: Check if at least one marker is selected
         // ============================================================
         if (items.length === 0) {
             this.showToast('Please add at least one marker with intel', 'warning');
             return;
         }
         
+        // ============================================================
+        // ALLOW SINGLE MARKER WITH BOTH BEARING AND DISTANCE
+        // ============================================================
         if (items.length === 1) {
             const item = items[0];
             // Check if the single marker has both bearing AND distance
@@ -2717,161 +2846,144 @@ class GridMapper {
     }
 
     displayTriangulateResults(results) {
-        const container = document.getElementById('triangulateResults');
-        const details = document.getElementById('triangulateResultDetails');
+        const container = document.getElementById('triangulationResultsContainer');
+        const details = document.getElementById('triangulationResultsDetails');
+        
+        if (!container || !details) return;
         
         this.triangulatePreview = null;
         
         if (results.length === 0) {
             container.style.display = 'block';
             details.innerHTML = '<span style="color:#ff8866;">No intersections found. Try adding more intel.</span>';
-            document.getElementById('triangulateCreateMarkerBtn').style.display = 'none';
             return;
         }
         
-        if (results.length > 1) {
-            let html = '<div style="margin-top:4px; margin-bottom:6px; color:#ffd93d; font-weight:bold;">🔍 Multiple intersections found. Click "Create" to add marker:</div>';
+        // Show the container
+        container.style.display = 'block';
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // ============================================================
+        // UPDATE HEADER: Add Creating as to the header
+        // ============================================================
+        const headerTitle = container.querySelector('h3');
+        const targetType = document.getElementById('triangulateTargetType').selectedOptions[0].text;
+        if (headerTitle) {
+            headerTitle.innerHTML = `
+                <svg class="icon-sm"><use href="images/icons.svg#icon-calculator"></use></svg> Triangulation Results
+                <span style="color:#6a7a8a; font-weight:normal; font-size:0.8rem; margin-left:8px;">|</span>
+                <span style="color:#8aacce; font-weight:normal; font-size:0.8rem; margin-left:8px;">Creating as: ${targetType}</span>
+            `;
+        }
+        
+        // ============================================================
+        // ALL RESULTS - Grid layout (single or multiple)
+        // ============================================================
+        
+        let html = `
+            <div style="margin-top:4px; margin-bottom:8px; color:#ffd93d; font-weight:bold;">
+                🔍 ${results.length} intersection(s) found:
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
+        `;
+        
+        results.forEach((result, index) => {
+            const inter = result.intersection;
             
-            results.forEach((result, index) => {
-                const inter = result.intersection;
-                const typeLabel = {
-                    'bearing-bearing': '<svg class="icon-sm"><use href="images/icons.svg#icon-angle"></use></svg> Bearing×Bearing',
-                    'bearing-distance': '<svg class="icon-sm"><use href="images/icons.svg#icon-angle"></use></svg><svg class="icon-sm"><use href="images/icons.svg#icon-radius"></use></svg> Bearing×Distance',
-                    'distance-distance': '<svg class="icon-sm"><use href="images/icons.svg#icon-radius"></use></svg><svg class="icon-sm"><use href="images/icons.svg#icon-radius"></use></svg> Distance×Distance'
-                }[result.type] || 'Intersection';
-                
-                html += `
-                    <div class="triangulate-result-card" 
-                        data-index="${index}"
-                        style="background:#0a121a; padding:8px 10px; border-radius:3px; margin-top:6px; border-left:3px solid #4ecdc4; cursor:pointer; transition:background 0.2s ease, transform 0.2s ease;">
+            // Build marker blocks
+            const marker1 = result.item1 ? result.item1.marker : null;
+            const marker2 = result.item2 ? result.item2.marker : null;
+            
+            const bearing1 = result.item1 && result.item1.bearing !== null ? result.item1.bearing : null;
+            const distance1 = result.item1 && result.item1.distance !== null ? result.item1.distance : null;
+            const bearing2 = result.item2 && result.item2.bearing !== null ? result.item2.bearing : null;
+            const distance2 = result.item2 && result.item2.distance !== null ? result.item2.distance : null;
+            
+            html += `
+                <div class="triangulate-result-card" 
+                    data-index="${index}"
+                    style="background:#0a121a; padding:12px; border-radius:6px; border-left:3px solid #4ecdc4; cursor:pointer; transition:background 0.2s ease, transform 0.2s ease; display:flex; flex-direction:column;">
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        <!-- Grid Reference + Create Button (same row) -->
                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div>
-                                <div style="color:#ffcc00; font-weight:bold; font-family:monospace;">${inter.gridRef}</div>
-                                <div style="font-size:0.7rem; color:#6a7a8a;">${typeLabel}</div>
-                                <div style="font-size:0.7rem; color:#8aacce; margin-top:2px;">
-                                    ${result.item1 ? result.item1.marker.label : '?'} → ${result.item2 ? result.item2.marker.label : '?'}
-                                    ${result.item1 && result.item1.bearing !== null ? ` | Brg: ${result.item1.bearing}°` : ''}
-                                    ${result.item2 && result.item2.bearing !== null ? ` | Brg: ${result.item2.bearing}°` : ''}
-                                </div>
-                            </div>
-                            <button onclick="window.gridMapper.createMarkerFromTriangulateResult(${index})" 
-                                    style="padding:3px 14px; background:#2a5a3a; color:#88ffaa; border:1px solid #3a8a5a; border-radius:3px; cursor:pointer; font-size:0.7rem; font-family:inherit; white-space:nowrap; margin-left:8px;">
+                            <div style="color:#ffcc00; font-weight:bold; font-family:monospace; font-size:1rem; word-break:break-all;">${inter.gridRef}</div>
+                            <button onclick="window.gridMapper.createMarkerFromTriangulateResult(${index})" class="create-btn" style="flex-shrink:0;">
                                 <svg class="icon-sm"><use href="images/icons.svg#icon-add-circle"></use></svg> Create
                             </button>
                         </div>
+                        
+                        <!-- Two blocks side by side -->
+                        <div style="display:flex; gap:8px; align-items:stretch;">
+                            <!-- Block 1: Marker 1 -->
+                            <div style="flex:1; background:rgba(255,255,255,0.03); border-radius:4px; padding:6px 8px; min-width:0;">
+                                <div style="color:#b0c4de; font-weight:600; font-size:0.75rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${marker1 ? marker1.label : '?'}</div>
+                                <div style="font-size:0.6rem; color:#6a7a8a; display:flex; gap:6px; flex-wrap:wrap; margin-top:2px;">
+                                    ${bearing1 !== null ? `<span>Brg: ${bearing1}°</span>` : ''}
+                                    ${distance1 !== null ? `<span>Dist: ${distance1}km</span>` : ''}
+                                    ${bearing1 === null && distance1 === null ? '<span style="color:#4a5a6a;">No data</span>' : ''}
+                                </div>
+                            </div>
+                            
+                            <!-- X separator -->
+                            <div style="display:flex; align-items:center; color:#6a7a8a; font-weight:bold; font-size:0.8rem; flex-shrink:0; padding:0 2px;">✕</div>
+                            
+                            <!-- Block 2: Marker 2 -->
+                            <div style="flex:1; background:rgba(255,255,255,0.03); border-radius:4px; padding:6px 8px; min-width:0;">
+                                <div style="color:#b0c4de; font-weight:600; font-size:0.75rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${marker2 ? marker2.label : '?'}</div>
+                                <div style="font-size:0.6rem; color:#6a7a8a; display:flex; gap:6px; flex-wrap:wrap; margin-top:2px;">
+                                    ${bearing2 !== null ? `<span>Brg: ${bearing2}°</span>` : ''}
+                                    ${distance2 !== null ? `<span>Dist: ${distance2}km</span>` : ''}
+                                    ${bearing2 === null && distance2 === null ? '<span style="color:#4a5a6a;">No data</span>' : ''}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                `;
-            });
-            
-            details.innerHTML = html;
-            container.style.display = 'block';
-            document.getElementById('triangulateCreateMarkerBtn').style.display = 'none';
-            
-            // ============================================================
-            // FIX: Store the results with proper structure
-            // ============================================================
-            this.triangulateResultsAll = results;
-            this.triangulateResult = null;
-            
-            const cards = container.querySelectorAll('.triangulate-result-card');
-            cards.forEach(card => {
-                const idx = parseInt(card.dataset.index);
-                
-                card.addEventListener('mouseenter', () => {
-                    card.style.background = 'rgba(255, 217, 61, 0.08)';
-                    card.style.transform = 'scale(1.01)';
-                    const res = results[idx];
-                    if (res) {
-                        this.showTriangulatePreview(res.intersection);
-                    }
-                });
-                
-                card.addEventListener('mouseleave', () => {
-                    card.style.background = '#0a121a';
-                    card.style.transform = 'scale(1)';
-                    this.clearTriangulatePreview();
-                });
-            });
-            
-            return;
-        }
+                </div>
+            `;
+        });
         
-        // Single result
-        const best = results[0];
-        const inter = best.intersection;
-        
-        container.style.display = 'block';
-        
-        let typeLabel = {
-            'bearing-bearing': '<svg class="icon-sm"><use href="images/icons.svg#icon-angle"></use></svg> Bearing × Bearing',
-            'bearing-distance': '<svg class="icon-sm"><use href="images/icons.svg#icon-angle"></use></svg><svg class="icon-sm"><use href="images/icons.svg#icon-radius"></use></svg> Bearing × Distance',
-            'distance-distance': '<svg class="icon-sm"><use href="images/icons.svg#icon-radius"></use></svg><svg class="icon-sm"><use href="images/icons.svg#icon-radius"></use></svg> Distance × Distance',
-            'bearing-distance-single': '<svg class="icon-sm"><use href="images/icons.svg#icon-angle"></use></svg><svg class="icon-sm"><use href="images/icons.svg#icon-radius"></use></svg> Bearing + Distance (Single Marker)'
-        }[best.type] || 'Intersection';
-        
-        const targetType = document.getElementById('triangulateTargetType').value;
-        
-        details.innerHTML = `
-            <div class="triangulate-result-card"
-                style="margin-top:4px; background:#0a121a; padding:8px 10px; border-radius:3px; border-left:3px solid #4ecdc4; cursor:pointer; transition:background 0.2s ease;">
-                <div style="color:#ffcc00; font-weight:bold; font-size:1.1rem; font-family:monospace;">${inter.gridRef}</div>
-                <div style="font-size:0.75rem; color:#6a7a8a; margin-top:2px;">
-                    Method: ${typeLabel}
-                </div>
-                <div style="font-size:0.75rem; color:#6a7a8a; margin-top:2px;">
-                    ${best.item1 ? best.item1.marker.label : '?'} → ${best.item2 ? best.item2.marker.label : '?'}
-                </div>
-                <div style="font-size:0.75rem; color:#8aacce; margin-top:2px;">
-                    ${best.item1 && best.item1.bearing !== null ? `<svg class="icon-sm"><use href="images/icons.svg#icon-angle"></use></svg> Brg: ${best.item1.bearing}°` : ''}
-                    ${best.item1 && best.item1.distance !== null ? ` <svg class="icon-sm"><use href="images/icons.svg#icon-radius"></use></svg> Dist: ${best.item1.distance}km` : ''}
-                    ${best.item2 && best.item2.bearing !== null ? ` | <svg class="icon-sm"><use href="images/icons.svg#icon-angle"></use></svg> Brg: ${best.item2.bearing}°` : ''}
-                    ${best.item2 && best.item2.distance !== null ? ` <svg class="icon-sm"><use href="images/icons.svg#icon-radius"></use></svg> Dist: ${best.item2.distance}km` : ''}
-                </div>
-                <div style="font-size:0.75rem; color:#8aacce; margin-top:2px;">
-                    Creating as: ${document.getElementById('triangulateTargetType').selectedOptions[0].text}
-                </div>
-                <div style="font-size:0.75rem; color:#ffd93d; margin-top:4px;">
-                    <svg class="icon-sm"><use href="images/icons.svg#icon-lightbulb"></use></svg> Intel will be added to the reference markers
-                </div>
-                <div style="font-size:0.7rem; color:#6a7a8a; margin-top:4px;">
-                    👆 Hover over this card to preview on grid
-                </div>
-                <button onclick="window.gridMapper.createMarkerFromTriangulateResult(0)" 
-                        style="margin-top:8px; padding:4px 14px; background:#2a5a3a; color:#88ffaa; border:1px solid #3a8a5a; border-radius:3px; cursor:pointer; font-size:0.75rem; font-family:inherit;">
-                    <svg class="icon-sm"><use href="images/icons.svg#icon-add-circle"></use></svg> Create Marker
-                </button>
+        html += `
             </div>
         `;
         
-        // ============================================================
-        // FIX: Store the result with proper structure
-        // ============================================================
-        this.triangulateResult = {
-            gridRef: inter.gridRef,
-            grid: inter.grid,
-            type: best.type,
-            items: [best.item1, best.item2].filter(item => item !== undefined),
-            targetType: targetType,
-            intersection: inter,
-            resultIndex: 0
-        };
-        
+        details.innerHTML = html;
         document.getElementById('triangulateCreateMarkerBtn').style.display = 'none';
-        this.triangulateResultsAll = null;
-        this.render();
         
-        const card = container.querySelector('.triangulate-result-card');
-        if (card) {
+        // Store the results with proper structure
+        this.triangulateResultsAll = results;
+        this.triangulateResult = null;
+        
+        // Add hover effects for cards
+        const cards = container.querySelectorAll('.triangulate-result-card');
+        cards.forEach(card => {
+            const idx = parseInt(card.dataset.index);
+            
             card.addEventListener('mouseenter', () => {
                 card.style.background = 'rgba(255, 217, 61, 0.08)';
-                this.showTriangulatePreview(inter);
+                card.style.transform = 'scale(1.02)';
+                const res = results[idx];
+                if (res) {
+                    this.showTriangulatePreview(res.intersection);
+                }
             });
             
             card.addEventListener('mouseleave', () => {
                 card.style.background = '#0a121a';
+                card.style.transform = 'scale(1)';
                 this.clearTriangulatePreview();
             });
+        });
+    }
+
+    closeTriangulationResults() {
+        const container = document.getElementById('triangulationResultsContainer');
+        if (container) {
+            container.style.display = 'none';
         }
+        this.triangulateResult = null;
+        this.triangulateResultsAll = null;
+        this.triangulatePreview = null;
+        this.render();
     }
 
     showTriangulatePreview(intersection) {
@@ -2989,12 +3101,10 @@ class GridMapper {
                 'success'
             );
             
-            // Clear the results
-            const container = document.getElementById('triangulateResults');
-            if (container) container.style.display = 'none';
-            this.triangulateResult = null;
-            this.triangulateResultsAll = null;
-            this.triangulatePreview = null;
+            // ============================================================
+            // FIX: Close the results container after creating a marker
+            // ============================================================
+            this.closeTriangulationResults();
             
             this.selectMarker(marker);
             this.updateMarkerList();
@@ -3041,7 +3151,7 @@ class GridMapper {
                 </div>
                 <button onclick="window.gridMapper.createMarkerFromTriangulateResult(0)" 
                         style="margin-top:8px; padding:4px 14px; background:#2a5a3a; color:#88ffaa; border:1px solid #3a8a5a; border-radius:3px; cursor:pointer; font-size:0.75rem; font-family:inherit;">
-                    <svg class="icon-sm"><use href="images/icons.svg#icon-add-circle"></use></svg> Create Marker
+                    <svg class="icon-sm"><use href="images/icons.svg#icon-add"></use></svg> Create Marker
                 </button>
             </div>
         `;
@@ -3577,11 +3687,30 @@ class GridMapper {
         // LAYER 1: Background (cached)
         this.renderBackground(ctx);
         
-        // LAYER 2: Markers + Intel + Drawings (all drawn together)
-        this.renderAllOverlays(ctx);
+        // LAYER 2: Free Drawings (arrows, compass circles)
+        this.drawFreeDrawings(ctx);
         
-        // LAYER 3: Hover effects (always render)
+        // LAYER 3: Markers + Intel (on top of drawings)
+        const markers = this.markerManager ? this.markerManager.getAllMarkers() : [];
+        for (const marker of markers) {
+            this.drawIntel(ctx, marker);
+        }
+        
+        // LAYER 4: Drawing previews (actively drawing)
+        if (this.isFreeDrawing) {
+            this.drawFreeDrawingPreview(ctx);
+        }
+        if (this.isDrawingCompass) {
+            this.drawCompassPreview(ctx);
+        }
+        
+        // LAYER 5: Hover effects (always render on top)
         this.renderHoverEffects(ctx);
+        
+        // LAYER 6: Triangulation preview (on top of everything)
+        if (this.triangulatePreview) {
+            this.drawTriangulationPreview(ctx);
+        }
     }
 
     renderBackground(ctx) {
@@ -3698,24 +3827,19 @@ class GridMapper {
     }
 
     renderAllOverlays(ctx) {
-        // Draw all markers with their intel
+        this.drawFreeDrawings(ctx);
+
         const markers = this.markerManager ? this.markerManager.getAllMarkers() : [];
         for (const marker of markers) {
             this.drawIntel(ctx, marker);
-        }
+        }        
         
-        // Draw free drawings (arrows, compass circles)
-        this.drawFreeDrawings(ctx);
-        
-        // Draw drawing previews (if actively drawing)
         if (this.isFreeDrawing) {
             this.drawFreeDrawingPreview(ctx);
         }
         if (this.isDrawingCompass) {
             this.drawCompassPreview(ctx);
         }
-        
-        // Draw triangulation preview
         if (this.triangulatePreview) {
             this.drawTriangulationPreview(ctx);
         }
@@ -4565,7 +4689,7 @@ class GridMapper {
                     </select>
                     <input type="text" id="addMarkerMainRef" placeholder="A1" style="flex:1; min-width:50px; padding:4px 6px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:monospace; font-size:0.75rem;">
                     <input type="text" id="addMarkerSubRef" placeholder="0:0" style="flex:1; min-width:50px; padding:4px 6px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:monospace; font-size:0.75rem;">
-                    <button id="addMarkerByPosBtn" style="padding:4px 10px; background:#2a5a3a; color:#88ffaa; border:1px solid #3a8a5a; border-radius:3px; cursor:pointer; font-size:0.75rem; font-family:inherit;"><svg class="icon-sm"><use href="images/icons.svg#icon-add-circle"></use></svg> Add</button>
+                    <button id="addMarkerByPosBtn" style="padding:4px 10px; background:#2a5a3a; color:#88ffaa; border:1px solid #3a8a5a; border-radius:3px; cursor:pointer; font-size:0.75rem; font-family:inherit;"><svg class="icon-sm"><use href="images/icons.svg#icon-add"></use></svg> Add</button>
                 </div>
                 <div style="color:#6a7a8a; font-size:0.6rem; margin-top:3px;">Main-Grid: A-T + 1-10 | Sub-Grid: 0:0 (OC = Off-Centered)</div>
             </div>
@@ -4696,7 +4820,7 @@ class GridMapper {
                 </select>
             </div>
             <div class="btn-group">
-                <button id="popupAddBtn" class="btn-add"><svg class="icon-sm"><use href="images/icons.svg#icon-add-circle"></use></svg> Add Marker</button>
+                <button id="popupAddBtn" class="btn-add"><svg class="icon-sm"><use href="images/icons.svg#icon-add"></use></svg> Add Marker</button>
                 <button id="popupCancelBtn" class="btn-cancel">Cancel</button>
             </div>
         `;
@@ -4938,74 +5062,6 @@ class GridMapper {
                 }
             }
             
-            if (item && item.type === 'freeDrawing') {
-                const drawing = item.item;
-                const gridPos = this.pixelToGridFree(px, py);
-                const ref = gridPos ? MarkerManager.toGridRef(gridPos.col, gridPos.row, gridPos.subX, gridPos.subY) : null;
-                
-                const menu = document.createElement('div');
-                menu.id = 'contextMenu';
-                menu.style.cssText = `
-                    position: fixed;
-                    top: ${Math.min(e.clientY, window.innerHeight - 150)}px;
-                    left: ${Math.min(e.clientX, window.innerWidth - 230)}px;
-                    background: #1a2a3a;
-                    border: 1px solid #3a5a6a;
-                    border-radius: 6px;
-                    padding: 6px 0;
-                    z-index: 10001;
-                    min-width: 200px;
-                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
-                `;
-                
-                const isAuto = drawing.autoIntel;
-                const typeLabel = drawing.type === 'compass' ? 'Compass Circle' : `${drawing.label} Arrow`;
-                
-                let html = `
-                    <div class="menu-header">${typeLabel} ${drawing.bearing !== undefined ? `| Brg: ${drawing.bearing.toFixed(0)}°` : ''}${drawing.distance !== undefined ? ` | Dist: ${drawing.distance.toFixed(2)}km` : ''}${isAuto ? ' <svg class="icon-sm"><use href="images/icons.svg#icon-times-circle"></use></svg>' : ''}</div>
-                `;
-                
-                if (gridPos) {
-                    html += `<div class="menu-item" data-action="addMarkerAtPosition" style="color:#4ecdc4;"><svg class="icon-sm"><use href="images/icons.svg#icon-marker"></use></svg> Add Marker at ${ref}</div>`;
-                }
-                
-                if (isAuto) {
-                    html += `<div class="menu-item" data-action="deleteDrawing" style="color:#ff6644;"><svg class="icon-sm"><use href="images/icons.svg#icon-trash"></use></svg> Remove Auto Vector</div>`;
-                } else {
-                    html += `<div class="menu-item" data-action="deleteDrawing" style="color:#ff6644;"><svg class="icon-sm"><use href="images/icons.svg#icon-trash"></use></svg> Delete Measurement</div>`;
-                }
-                
-                html += `<div class="menu-item" data-action="cancel" style="color:#6a7a8a;">Cancel</div>`;
-                
-                menu.innerHTML = html;
-                document.body.appendChild(menu);
-                
-                menu.querySelector('[data-action="addMarkerAtPosition"]')?.addEventListener('click', () => {
-                    if (gridPos) {
-                        this.showAddMarkerPopup(gridPos, e.clientX, e.clientY);
-                    }
-                    menu.remove();
-                });
-                
-                menu.querySelector('[data-action="deleteDrawing"]')?.addEventListener('click', () => {
-                    if (drawing.autoIntel && drawing.targetId) {
-                        this.removeAutoIntelForTarget(drawing.targetId);
-                        this.showToast('Auto vector removed', 'success');
-                    } else {
-                        this.deleteFreeDrawing(drawing.id);
-                    }
-                    this.hoveredItem = null;
-                    menu.remove();
-                });
-                
-                menu.querySelector('[data-action="cancel"]')?.addEventListener('click', () => {
-                    menu.remove();
-                });
-                
-                this.closePopupOnOutside(menu);
-                return;
-            }
-            
             const grid = this.pixelToGridFree(px, py);
             this.showContextMenu(e, item, grid);
             return false;
@@ -5169,6 +5225,65 @@ class GridMapper {
             }
 
             if (item && item.type === 'freeDrawing') {
+                const drawing = item.item;
+                if (drawing.type !== 'compass' && drawing.distance !== undefined && drawing.distance !== null) {
+                    const distance = drawing.distance;
+                    const bearing = drawing.bearing !== undefined ? drawing.bearing : null;
+                    const label = drawing.autoIntel ? 'auto vector' : 'vector';
+                    
+                    // Update Ballistic calculator range
+                    const rangeInput = document.getElementById('ballisticRange');
+                    if (rangeInput) {
+                        rangeInput.value = distance.toFixed(1);
+                        rangeInput.dispatchEvent(new Event('input'));
+                    }
+                    
+                    // Update Ballistic calculator bearing display
+                    const bearingDisplay = document.getElementById('ballisticBearing');
+                    if (bearingDisplay && bearing !== null) {
+                        bearingDisplay.textContent = bearing.toFixed(1) + '°';
+                        bearingDisplay.style.color = 'var(--accent-amber)';
+                    }
+                    
+                    // Update Flight Time calculator range
+                    const flightRangeInput = document.getElementById('flightTargetRange');
+                    if (flightRangeInput) {
+                        flightRangeInput.value = distance.toFixed(1);
+                        flightRangeInput.dispatchEvent(new Event('input'));
+                    }
+                    
+                    // Update Flight Time calculator bearing display
+                    const flightBearingDisplay = document.getElementById('flightBearing');
+                    if (flightBearingDisplay && bearing !== null) {
+                        flightBearingDisplay.textContent = bearing.toFixed(1) + '°';
+                        flightBearingDisplay.style.color = 'var(--accent-amber)';
+                    }
+                    
+                    // Store bearing in main.js via window
+                    if (window.setCurrentBearing) {
+                        window.setCurrentBearing(bearing);
+                    }
+                    
+                    this.showToast(`Range set to ${distance.toFixed(1)} km from ${label}`, 'success');
+                } else if (drawing.type === 'compass' && drawing.distance !== undefined && drawing.distance !== null) {
+                    const distance = drawing.distance;
+                    
+                    // Update Ballistic calculator range
+                    const rangeInput = document.getElementById('ballisticRange');
+                    if (rangeInput) {
+                        rangeInput.value = distance.toFixed(1);
+                        rangeInput.dispatchEvent(new Event('input'));
+                    }
+                    
+                    // Update Flight Time calculator range
+                    const flightRangeInput = document.getElementById('flightTargetRange');
+                    if (flightRangeInput) {
+                        flightRangeInput.value = distance.toFixed(1);
+                        flightRangeInput.dispatchEvent(new Event('input'));
+                    }
+                    
+                    this.showToast(`Range set to ${distance.toFixed(1)} km from compass`, 'success');
+                }
                 return;
             }
 
@@ -5181,7 +5296,6 @@ class GridMapper {
                 canvas.style.cursor = 'grabbing';
                 return;
             }
-
         });
 
         canvas.addEventListener('mousemove', (e) => {
@@ -5273,21 +5387,15 @@ class GridMapper {
                 canvas.style.cursor = 'grabbing';
             } else if (item) {
                 if (item.type === 'marker') {
-                    canvas.style.cursor = this.tool === 'select' ? 'pointer' : 
-                                        this.tool === 'drag' ? 'grab' : 'crosshair';
+                    canvas.style.cursor = this.tool === 'select' ? 'pointer' : this.getCursorForTool(this.tool);
+                } else if (item.type === 'freeDrawing') {
+                    // Show pointer cursor for free drawings (vectors, compass) when select tool is active
+                    canvas.style.cursor = this.tool === 'select' ? 'pointer' : this.getCursorForTool(this.tool);
                 } else {
                     canvas.style.cursor = 'pointer';
                 }
-            } else if (this.tool === 'drag') {
-                canvas.style.cursor = 'grab';
-            } else if (this.tool === 'intelPen') {
-                canvas.style.cursor = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Cline x1=\'2\' y1=\'22\' x2=\'10\' y2=\'14\' stroke=\'%23ffd93d\' stroke-width=\'2.5\'/%3E%3Cline x1=\'10\' y1=\'14\' x2=\'22\' y2=\'2\' stroke=\'%23ffd93d\' stroke-width=\'2.5\'/%3E%3Ccircle cx=\'10\' cy=\'14\' r=\'4\' fill=\'%23ffd93d\' stroke=\'%23fff\' stroke-width=\'1\'/%3E%3C/svg%3E") 0 22, crosshair';
-            } else if (this.tool === 'vectorPen') {
-                canvas.style.cursor = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Cline x1=\'2\' y1=\'22\' x2=\'10\' y2=\'14\' stroke=\'%23ff4444\' stroke-width=\'2.5\'/%3E%3Cline x1=\'10\' y1=\'14\' x2=\'22\' y2=\'2\' stroke=\'%23ff4444\' stroke-width=\'2.5\'/%3E%3Ccircle cx=\'10\' cy=\'14\' r=\'4\' fill=\'%23ff4444\' stroke=\'%23fff\' stroke-width=\'1\'/%3E%3C/svg%3E") 0 22, crosshair';
-            } else if (this.tool === 'compass') {
-                canvas.style.cursor = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Ccircle cx=\'12\' cy=\'12\' r=\'10\' fill=\'none\' stroke=\'%23ffffff\' stroke-width=\'1.5\'/%3E%3Cline x1=\'5\' y1=\'20\' x2=\'12\' y2=\'8\' stroke=\'%23ffffff\' stroke-width=\'2\'/%3E%3Cline x1=\'19\' y1=\'20\' x2=\'12\' y2=\'8\' stroke=\'%23ffffff\' stroke-width=\'2\'/%3E%3Cline x1=\'12\' y1=\'8\' x2=\'12\' y2=\'4\' stroke=\'%23ffffff\' stroke-width=\'2\'/%3E%3Ccircle cx=\'12\' cy=\'3\' r=\'1.5\' fill=\'%23ffffff\'/%3E%3C/svg%3E") 12 12, crosshair';
             } else {
-                canvas.style.cursor = 'crosshair';
+                canvas.style.cursor = this.getCursorForTool(this.tool);
             }
 
             // ============================================================
@@ -5390,7 +5498,6 @@ class GridMapper {
                         
                         this.markersChanged = true;
                         this.requestRender(false, false);
-                        this.updateMarkerList();
                         this.updateDropdowns();
                         if (this.selectedMarker) {
                             this.updateIntelDisplay(this.selectedMarker.id);

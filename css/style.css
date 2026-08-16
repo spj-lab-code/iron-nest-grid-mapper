@@ -389,6 +389,22 @@ header h1 svg {
     border: 1px solid var(--border-subtle);
 }
 
+.calc-result-item.bearing-item {
+    flex: 1.2;
+}
+
+/* Generate card button container */
+.calc-result-item.card-btn-container {
+    flex: 0.6;
+    min-width: 80px;
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0;
+}
+
 .calc-result-label {
     display: block;
     color: var(--text-muted);
@@ -593,6 +609,15 @@ header h1 svg {
     font-family: inherit;
     transition: background 0.2s ease, color 0.2s ease;
 }
+.marker-list .delete-btn svg,
+#removeAllMeasurementsBtn svg{
+    color: var(--accent-rose);
+}
+
+#removeAllIntelBtn svg {
+    color: #ff8866;
+}
+
 
 .marker-list .delete-btn:hover {
     background: rgba(255, 77, 77, 0.15);
@@ -1396,7 +1421,7 @@ header h1 svg {
 
 /* Reverse Mode Custom Palette */
 #flightModeReverse .calc-result-value {
-    color: var(--accent-purple);
+    color: var(--accent-rose);
 }
 
 #flightModeReverse .calc-info {
@@ -1927,4 +1952,384 @@ svg[class^="icon-"] {
     background: rgba(255, 255, 255, 0.08);
     border-color: var(--text-primary);
     color: var(--text-primary);
+}
+
+/* ==========================================
+   CHARGE SELECTOR - Visual Powder Charge
+   ========================================== */
+
+.charge-selector {
+    display: flex;
+    gap: 4px;
+    padding: 4px 0;
+    flex-wrap: wrap;
+}
+
+.charge-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    border: 2px solid var(--border-strong);
+    background: var(--bg-surface);
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.charge-btn:hover:not(.charge-unavailable) {
+    border-color: var(--accent-primary);
+    transform: scale(1.05);
+    box-shadow: 0 0 12px rgba(0, 242, 254, 0.15);
+}
+
+/* Available state - white/gray border */
+.charge-btn.charge-available {
+    background: var(--bg-surface-elevated);
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+}
+
+/* Active state - green */
+.charge-btn.charge-active {
+    background: rgba(0, 230, 118, 0.2);
+    border-color: var(--accent-emerald);
+    color: var(--accent-emerald);
+    box-shadow: 0 0 16px rgba(0, 230, 118, 0.15);
+}
+
+.charge-btn.charge-active:hover {
+    background: rgba(0, 230, 118, 0.3);
+    box-shadow: 0 0 20px rgba(0, 230, 118, 0.25);
+}
+
+/* Unavailable state - red */
+.charge-btn.charge-unavailable {
+    background: rgba(255, 77, 77, 0.1);
+    border-color: rgba(255, 77, 77, 0.3);
+    color: var(--accent-rose);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.charge-btn.charge-unavailable:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Range label below selector */
+.charge-selector-info {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', Consolas, monospace;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .charge-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 400px) {
+    .charge-btn {
+        width: 26px;
+        height: 26px;
+        font-size: 10px;
+    }
+}
+
+/* ==========================================
+   CHARGE SELECTOR - Match Range Input
+   ========================================== */
+
+/* Make the charge selector align with the range input */
+.calc-group .charge-selector {
+    display: flex;
+    gap: 4px;
+    padding: 0;
+    flex-wrap: wrap;
+    align-items: center;
+    height: 36px; /* Match input height */
+}
+
+.charge-btn {
+    width: 36px;
+    height: 36px; /* Match input height */
+    border-radius: 4px;
+    border: 2px solid var(--border-strong);
+    background: var(--bg-surface);
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+}
+
+/* Make the range input match the charge selector height */
+.calc-group input[type="number"] {
+    width: 100%;
+    padding: 6px 10px;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 14px;
+    height: 36px; /* Match charge button height */
+    transition: border-color 0.2s ease;
+}
+
+/* Keep the label consistent */
+.calc-group label {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+    font-weight: 500;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+/* ==========================================
+   TRIANGULATION RESULT CARDS - Create Button
+   ========================================== */
+
+/* Create button inside triangulation cards */
+.triangulate-result-card .create-btn {
+    padding: 4px 12px;
+    background: rgba(0, 230, 118, 0.15);
+    color: var(--accent-emerald);
+    border: 1px solid var(--accent-emerald);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-family: inherit;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.triangulate-result-card .create-btn:hover {
+    background: rgba(0, 230, 118, 0.25);
+    box-shadow: 0 0 16px rgba(0, 230, 118, 0.2);
+    transform: scale(1.05);
+}
+
+.triangulate-result-card .create-btn:active {
+    transform: scale(0.95);
+}
+
+/* Create button for single result (larger) */
+.triangulate-result-card .create-btn-large {
+    padding: 8px 24px;
+    background: rgba(0, 230, 118, 0.15);
+    color: var(--accent-emerald);
+    border: 1px solid var(--accent-emerald);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-family: inherit;
+    align-self: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.triangulate-result-card .create-btn-large:hover {
+    background: rgba(0, 230, 118, 0.25);
+    box-shadow: 0 0 20px rgba(0, 230, 118, 0.25);
+    transform: scale(1.05);
+}
+
+.triangulate-result-card .create-btn-large:active {
+    transform: scale(0.95);
+}
+
+/* Ensure the plus icon matches the button color */
+.triangulate-result-card .create-btn svg,
+.triangulate-result-card .create-btn-large svg {
+    color: var(--accent-emerald);
+    transition: color 0.2s ease;
+}
+
+.triangulate-result-card .create-btn:hover svg,
+.triangulate-result-card .create-btn-large:hover svg {
+    color: var(--accent-emerald);
+}
+
+/* Triangulate marker dropdown error state - only red border */
+.triangulate-marker.error {
+    border-color: var(--accent-rose) !important;
+    box-shadow: 0 0 0 2px rgba(255, 77, 77, 0.1) !important;
+}
+
+/* ==========================================
+   FIRING SOLUTION CARDS
+   ========================================== */
+
+.firing-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    padding: 12px 14px;
+    transition: all 0.2s ease;
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.firing-card:hover {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 16px rgba(0, 242, 254, 0.08);
+}
+
+.firing-card.done {
+    opacity: 0.5;
+    border-color: var(--accent-emerald);
+    background: rgba(0, 230, 118, 0.05);
+}
+
+.firing-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.firing-card .card-shell-type {
+    color: var(--accent-amber);
+    font-weight: 700;
+    font-size: 0.9rem;
+    font-family: 'JetBrains Mono', Consolas, monospace;
+}
+
+.firing-card .card-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.firing-card .card-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.firing-card .card-actions .done-btn {
+    color: var(--accent-emerald);
+}
+
+.firing-card .card-actions .done-btn:hover {
+    background: rgba(0, 230, 118, 0.15);
+}
+
+.firing-card .card-actions .delete-btn {
+    color: var(--accent-rose);
+}
+
+.firing-card .card-actions .delete-btn:hover {
+    background: rgba(255, 77, 77, 0.15);
+}
+
+.firing-card .card-details {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.firing-card .card-details .detail-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.firing-card .card-details .detail-item .label {
+    color: var(--text-muted);
+}
+
+.firing-card .card-details .detail-item .value {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.firing-card .card-charge-display {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.firing-card .card-charge-block {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-input);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.firing-card .card-charge-block.active {
+    border-color: var(--accent-emerald);
+    background: rgba(0, 230, 118, 0.2);
+    color: var(--accent-emerald);
+}
+
+.firing-card .card-charge-block.inactive {
+    border-color: var(--border-subtle);
+    background: var(--bg-input);
+    color: var(--text-muted);
+    opacity: 0.4;
+}
+
+.firing-card .done-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4rem;
+    color: var(--accent-emerald);
+    opacity: 0.3;
+    pointer-events: none;
+    font-weight: bold;
+    text-shadow: 0 0 40px rgba(0, 230, 118, 0.2);
+}
+
+@media (max-width: 768px) {
+    #firingCardsContainer {
+        grid-template-columns: 1fr !important;
+    }
 }
