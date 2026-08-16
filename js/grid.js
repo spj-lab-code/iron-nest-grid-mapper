@@ -5234,7 +5234,7 @@ updateRemoveButtons() {
                     // Update Ballistic calculator range
                     const rangeInput = document.getElementById('ballisticRange');
                     if (rangeInput) {
-                        rangeInput.value = distance.toFixed(1);
+                        rangeInput.value = distance.toFixed(2);
                         rangeInput.dispatchEvent(new Event('input'));
                     }
                     
@@ -5248,7 +5248,7 @@ updateRemoveButtons() {
                     // Update Flight Time calculator range
                     const flightRangeInput = document.getElementById('flightTargetRange');
                     if (flightRangeInput) {
-                        flightRangeInput.value = distance.toFixed(1);
+                        flightRangeInput.value = distance.toFixed(2);
                         flightRangeInput.dispatchEvent(new Event('input'));
                     }
                     
@@ -5271,14 +5271,14 @@ updateRemoveButtons() {
                     // Update Ballistic calculator range
                     const rangeInput = document.getElementById('ballisticRange');
                     if (rangeInput) {
-                        rangeInput.value = distance.toFixed(1);
+                        rangeInput.value = distance.toFixed(2);
                         rangeInput.dispatchEvent(new Event('input'));
                     }
                     
                     // Update Flight Time calculator range
                     const flightRangeInput = document.getElementById('flightTargetRange');
                     if (flightRangeInput) {
-                        flightRangeInput.value = distance.toFixed(1);
+                        flightRangeInput.value = distance.toFixed(2);
                         flightRangeInput.dispatchEvent(new Event('input'));
                     }
                     

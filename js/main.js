@@ -4,46 +4,6 @@
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    // ============================================================
-    // BEARING DEBUG MODE
-    // ============================================================
-
-    const BEARING_DEBUG = true; // Set to false to disable
-
-    function bearingDebug(...args) {
-        if (BEARING_DEBUG) {
-            console.log('[BEARING]', ...args);
-        }
-    }
-
-    // Override setCurrentBearing with debug
-    const originalSetCurrentBearing = window.setCurrentBearing;
-    window.setCurrentBearing = function(bearing) {
-        bearingDebug('setCurrentBearing called with:', bearing);
-        currentBearing = bearing;
-        bearingDebug('currentBearing is now:', currentBearing);
-    };
-
-    // Also add a function to check bearing elements
-    function checkBearingElements() {
-        const ballisticBearing = document.getElementById('ballisticBearing');
-        const flightBearing = document.getElementById('flightBearing');
-        
-        bearingDebug('=== BEARING ELEMENT CHECK ===');
-        bearingDebug('ballisticBearing element:', ballisticBearing);
-        bearingDebug('ballisticBearing text:', ballisticBearing?.textContent);
-        bearingDebug('ballisticBearing style.color:', ballisticBearing?.style.color);
-        bearingDebug('flightBearing element:', flightBearing);
-        bearingDebug('flightBearing text:', flightBearing?.textContent);
-        bearingDebug('flightBearing style.color:', flightBearing?.style.color);
-        bearingDebug('currentBearing variable:', currentBearing);
-        
-        return { ballisticBearing, flightBearing };
-    }
-
-    // Make it globally accessible
-    window.checkBearingElements = checkBearingElements;
-
     // --- DOM References ---
     const elements = {
         canvas: document.getElementById('gridCanvas'),
@@ -311,9 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!rangeInput) return;
 
-        // ============================================================
-        // PRESERVE THE BEARING VALUE
-        // ============================================================
+        // Preserve the bearing value
         let currentBearingValue = null;
         if (bearingDisplay) {
             const text = bearingDisplay.textContent;
@@ -341,12 +299,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const elevation = calculateElevation(range, charge);
         const flightTime = calculateFlightTime(elevation, charge);
 
+        // Display with 2 decimals for elevation and flight time
         if (elevationDisplay) elevationDisplay.textContent = elevation.toFixed(2) + '°';
         if (flightTimeDisplay) flightTimeDisplay.textContent = flightTime.toFixed(2) + ' s';
 
-        // ============================================================
-        // RESTORE THE BEARING VALUE
-        // ============================================================
+        // Restore the bearing value
         if (bearingDisplay && currentBearingValue) {
             bearingDisplay.textContent = currentBearingValue;
             bearingDisplay.style.color = 'var(--accent-amber)';
@@ -365,9 +322,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!timeInput || !rangeInput) return;
 
-        // ============================================================
-        // PRESERVE THE BEARING VALUE
-        // ============================================================
+        // Preserve the bearing value
         let currentBearingValue = null;
         if (bearingDisplay) {
             const text = bearingDisplay.textContent;
@@ -382,6 +337,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const result = reverseCalculateCharge(targetTime, targetRange);
 
         if (result.chargeFound && result.elevation !== null) {
+            // Display with 2 decimals
             if (elevationDisplay) elevationDisplay.textContent = result.elevation.toFixed(2) + '°';
             if (chargeDisplay) chargeDisplay.textContent = result.charge;
             if (flightTimeDisplay) flightTimeDisplay.textContent = result.flightTime.toFixed(2) + ' s';
@@ -398,9 +354,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (chargeDisplay) chargeDisplay.style.color = '#ff6644';
         }
 
-        // ============================================================
-        // RESTORE THE BEARING VALUE
-        // ============================================================
+        // Restore the bearing value
         if (bearingDisplay && currentBearingValue) {
             bearingDisplay.textContent = currentBearingValue;
             bearingDisplay.style.color = 'var(--accent-amber)';
@@ -535,7 +489,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="card-details">
                         <span class="detail-item">
                             <span class="label">Range:</span>
-                            <span class="value">${solution.range.toFixed(1)} km</span>
+                            <span class="value">${solution.range.toFixed(2)} km</span>
                         </span>
                         <span class="detail-item">
                             <span class="label">Elevation:</span>
