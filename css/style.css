@@ -68,6 +68,13 @@ h1 {
     text-shadow: 0 0 12px rgba(0, 242, 254, 0.2);
 }
 
+header h1 svg {
+    vertical-align: middle;
+    margin-right: 8px;
+    position: relative;
+    top: -2px;
+}
+
 .header-controls {
     display: flex;
     gap: 10px;
@@ -278,6 +285,9 @@ h1 {
 }
 
 .calculator-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     padding: 6px 16px;
     background: var(--bg-surface-elevated);
     color: var(--text-secondary);
@@ -288,6 +298,10 @@ h1 {
     font-family: inherit;
     font-weight: 500;
     transition: all 0.2s ease;
+}
+
+.calculator-tab svg[class^="icon-"] {
+    position: static;
 }
 
 .calculator-tab:hover {
@@ -719,6 +733,10 @@ h1 {
 }
 
 .btn-tool {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
     padding: 4px 10px;
     font-size: 0.75rem;
     background: var(--bg-surface-elevated);
@@ -728,6 +746,8 @@ h1 {
     cursor: pointer;
     transition: all 0.2s ease;
     font-family: inherit;
+    height: 28px;
+    line-height: 1;
 }
 
 .btn-tool.active {
@@ -799,6 +819,9 @@ h1 {
 }
 
 .zoom-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: var(--bg-surface-elevated);
     color: var(--text-primary);
     border: 1px solid var(--border-subtle);
@@ -809,7 +832,9 @@ h1 {
     font-family: inherit;
     transition: all 0.2s ease;
     height: 28px;
+    line-height: 1;
 }
+
 
 .zoom-btn:hover {
     background: #222d42;
@@ -1141,6 +1166,9 @@ h1 {
 }
 
 .intel-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     padding: 4px 12px;
     background: var(--bg-surface-elevated);
     color: var(--text-secondary);
@@ -1150,6 +1178,55 @@ h1 {
     font-size: 0.75rem;
     font-family: inherit;
     transition: all 0.2s ease;
+}
+
+.intel-tab svg[class^="icon-"] {
+    position: static;
+}
+
+.intel-entry svg[class^="icon-"] {
+    position: static;
+    vertical-align: middle;
+}
+
+.marker-intel-badge svg[class^="icon-"] {
+    position: static;
+    vertical-align: middle;
+}
+
+#contextMenu .menu-item svg[class^="icon-"] {
+    position: static;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+/* Remove All Measurements button icon */
+#removeAllMeasurementsBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+#removeAllMeasurementsBtn svg[class^="icon-"] {
+    position: static;
+}
+
+/* Add marker section select options with icons */
+#addMarkerType option svg[class^="icon-"] {
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+/* Popup marker type options */
+#popupMarkerType option svg[class^="icon-"] {
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+/* Context menu free drawing auto vector icon */
+#contextMenu .menu-header svg[class^="icon-"] {
+    position: static;
+    vertical-align: middle;
 }
 
 .intel-tab:hover {
@@ -1625,7 +1702,8 @@ h1 {
 
 .btn .icon-sm + span,
 .btn .icon-md + span,
-.btn .icon-lg + span {
+.btn .icon-lg + span,
+.btn-tool svg[class^="icon-"] + span {
     margin-left: 4px;
 }
 
@@ -1740,8 +1818,11 @@ svg[class^="icon-"] {
     stroke-linecap: round;
     stroke-linejoin: round;
     transition: all 0.2s ease;
-    color: var(--text-primary); /* Default color */
+    color: var(--text-primary);
+    position: relative;
+    top: -1px;
 }
+
 
 /* Specific color overrides */
 .icon-primary { color: var(--accent-primary); }
@@ -1753,9 +1834,8 @@ svg[class^="icon-"] {
 .icon-purple { color: var(--accent-purple); }
 .icon-white { color: var(--text-primary); }
 
-/* Tool buttons should inherit button color */
 .btn-tool svg[class^="icon-"] {
-    color: inherit;
+    position: static;
 }
 
 .btn-tool.active svg[class^="icon-"] {
@@ -1764,7 +1844,7 @@ svg[class^="icon-"] {
 
 /* Zoom buttons */
 .zoom-btn svg[class^="icon-"] {
-    color: var(--text-primary);
+    position: static;
 }
 
 .zoom-btn:hover svg[class^="icon-"] {
@@ -1774,4 +1854,77 @@ svg[class^="icon-"] {
 /* Danger buttons */
 .btn-danger svg[class^="icon-"] {
     color: var(--accent-rose);
+}
+
+/* Specific tool icon colors - override default */
+.btn-tool[data-tool="intelPen"] svg[class^="icon-"] {
+    color: var(--accent-amber) !important; /* Yellow */
+}
+
+.btn-tool[data-tool="intelPen"]:hover svg[class^="icon-"] {
+    color: #ffcc33 !important;
+}
+
+.btn-tool[data-tool="intelPen"].active svg[class^="icon-"] {
+    color: var(--accent-amber) !important;
+}
+
+.btn-tool[data-tool="vectorPen"] svg[class^="icon-"] {
+    color: var(--accent-rose) !important; /* Red */
+}
+
+.btn-tool[data-tool="vectorPen"]:hover svg[class^="icon-"] {
+    color: #ff6666 !important;
+}
+
+.btn-tool[data-tool="vectorPen"].active svg[class^="icon-"] {
+    color: var(--accent-rose) !important;
+}
+
+.btn-tool[data-tool="compass"] svg[class^="icon-"] {
+    color: var(--text-primary) !important; /* White */
+}
+
+.btn-tool[data-tool="compass"]:hover svg[class^="icon-"] {
+    color: #ffffff !important;
+}
+
+.btn-tool[data-tool="compass"].active svg[class^="icon-"] {
+    color: var(--text-primary) !important;
+}
+
+/* Hover state for Intel Pen tool */
+.btn-tool[data-tool="intelPen"]:hover {
+    border-color: var(--accent-amber);
+    box-shadow: 0 0 10px rgba(255, 184, 0, 0.15);
+}
+
+.btn-tool[data-tool="intelPen"].active {
+    background: rgba(255, 184, 0, 0.15);
+    border-color: var(--accent-amber);
+    color: var(--accent-amber);
+}
+
+/* Hover state for Vector Pen tool */
+.btn-tool[data-tool="vectorPen"]:hover {
+    border-color: var(--accent-rose);
+    box-shadow: 0 0 10px rgba(255, 77, 77, 0.15);
+}
+
+.btn-tool[data-tool="vectorPen"].active {
+    background: rgba(255, 77, 77, 0.15);
+    border-color: var(--accent-rose);
+    color: var(--accent-rose);
+}
+
+/* Hover state for Compass tool */
+.btn-tool[data-tool="compass"]:hover {
+    border-color: var(--text-primary);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.btn-tool[data-tool="compass"].active {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--text-primary);
+    color: var(--text-primary);
 }

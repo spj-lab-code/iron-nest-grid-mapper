@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const isMax = Math.abs(clampedRange - maxRange) < 0.01;
         const infoMsg = isMax 
             ? '⚡ At maximum range! Elevation = 60° (forced by game)'
-            : `💡 Elevation = (${clampedRange.toFixed(1)} × 12) / ${charge} = ${elevation.toFixed(2)}°`;
+            : `<svg class="icon-sm"><use href="images/icons.svg#icon-lightbulb"></use></svg> Elevation = (${clampedRange.toFixed(1)} × 12) / ${charge} = ${elevation.toFixed(2)}°`;
         infoDisplay.textContent = infoMsg;
         infoDisplay.style.borderLeftColor = isMax ? '#ffd93d' : '#4a7a8a';
     }
@@ -243,14 +243,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Feasibility status
             if (result.feasible) {
-                feasibleDisplay.textContent = '✅ Yes';
+                feasibleDisplay.textContent = '<svg class="icon-sm"><use href="images/icons.svg#icon-check-circle"></use></svg> Yes';
                 feasibleDisplay.className = 'feasible-yes';
-                infoDisplay.textContent = `✅ Optimal: Charge ${result.charge}, Elevation ${result.elevation.toFixed(2)}°, Actual flight time ${result.flightTime.toFixed(2)}s (target: ${targetTime.toFixed(1)}s, error: ${(result.error * 100).toFixed(0)}ms)`;
+                infoDisplay.textContent = `<svg class="icon-sm"><use href="images/icons.svg#icon-check-circle"></use></svg> Optimal: Charge ${result.charge}, Elevation ${result.elevation.toFixed(2)}°, Actual flight time ${result.flightTime.toFixed(2)}s (target: ${targetTime.toFixed(1)}s, error: ${(result.error * 100).toFixed(0)}ms)`;
                 infoDisplay.style.borderLeftColor = '#88ffaa';
             } else {
-                feasibleDisplay.textContent = '⚠️ Approx';
+                feasibleDisplay.textContent = '<svg class="icon-sm"><use href="images/icons.svg#icon-alert-triangle"></use></svg> Approx';
                 feasibleDisplay.className = 'feasible-maybe';
-                infoDisplay.textContent = `⚠️ Closest match: Charge ${result.charge}, Elevation ${result.elevation.toFixed(2)}°, Actual flight time ${result.flightTime.toFixed(2)}s (target: ${targetTime.toFixed(1)}s, error: ${(result.error * 100).toFixed(0)}ms) - Try adjusting time or range`;
+                infoDisplay.textContent = `<svg class="icon-sm"><use href="images/icons.svg#icon-alert-triangle"></use></svg> Closest match: Charge ${result.charge}, Elevation ${result.elevation.toFixed(2)}°, Actual flight time ${result.flightTime.toFixed(2)}s (target: ${targetTime.toFixed(1)}s, error: ${(result.error * 100).toFixed(0)}ms) - Try adjusting time or range`;
                 infoDisplay.style.borderLeftColor = '#ffd93d';
             }
 
@@ -265,9 +265,9 @@ document.addEventListener('DOMContentLoaded', function() {
             flightTimeDisplay.textContent = '—';
             maxRangeDisplay.textContent = '—';
             t60Display.textContent = '—';
-            feasibleDisplay.textContent = '❌ No';
+            feasibleDisplay.textContent = '<svg class="icon-sm"><use href="images/icons.svg#icon-close"></use></svg> No';
             feasibleDisplay.className = 'feasible-no';
-            infoDisplay.textContent = '❌ No powder charge can achieve this combination of flight time and range. Try adjusting values.';
+            infoDisplay.textContent = '<svg class="icon-sm"><use href="images/icons.svg#icon-close"></use></svg> No powder charge can achieve this combination of flight time and range. Try adjusting values.';
             infoDisplay.style.borderLeftColor = '#ff6644';
             
             elevationDisplay.style.color = '#ff6644';
@@ -329,11 +329,11 @@ document.addEventListener('DOMContentLoaded', function() {
             gridMapper.setTool(this.dataset.tool);
             
             const toolLabels = {
-                select: '🖱️ Click to select markers, drag to move them',
-                drag: '✋ Drag to pan around the map',
-                intelPen: '✏️ Click and drag to draw an Intel arrow',
-                vectorPen: '🖍️ Click and drag to draw a Vector arrow',
-                compass: '⚪ Click and drag to draw a distance circle'
+                select: '<svg class="icon-sm"><use href="images/icons.svg#icon-mouse-pointer"></use></svg> Click to select markers, drag to move them',
+                drag: '<svg class="icon-sm"><use href="images/icons.svg#icon-hand"></use></svg> Drag to pan around the map',
+                intelPen: '<svg class="icon-sm"><use href="images/icons.svg#icon-pencil-line"></use></svg> Click and drag to draw an Intel arrow',
+                vectorPen: '<svg class="icon-sm"><use href="images/icons.svg#icon-pen-line"></use></svg> Click and drag to draw a Vector arrow',
+                compass: '<svg class="icon-sm"><use href="images/icons.svg#icon-drafting-compass"></use></svg> Click and drag to draw a distance circle'
             };
             if (elements.drawingInfo) {
                 elements.drawingInfo.innerHTML = `<p style="color:#88bbff; font-size:0.8rem;">${toolLabels[this.dataset.tool] || ''}</p>`;
