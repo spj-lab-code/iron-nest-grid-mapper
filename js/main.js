@@ -503,5 +503,4 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('removeAllMeasurementsBtn').addEventListener('click', () => {
         gridMapper.removeAllMeasurements();
     });
-
 });

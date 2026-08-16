@@ -1967,7 +1967,7 @@ class GridMapper {
             <div style="display:flex; gap:12px; align-items:flex-start;">
                 <div class="form-group" style="flex:1; min-width:0; margin-bottom:0;">
                     <label style="display:flex; align-items:center; gap:4px; font-size:0.85rem; color:#8aacce; margin-bottom:4px;">
-                        <span><i data-lucide="pencil" class="icon-sm"></i></span> Bearing <span style="color:#6a7a8a; font-size:0.65rem; font-weight:normal;">(0-360°)</span>
+                        <span><i data-lucide="angle" class="icon-sm"></i></span> Bearing <span style="color:#6a7a8a; font-size:0.65rem; font-weight:normal;">(0-360°)</span>
                     </label>
                     <input type="number" id="intelBearing" min="0" max="360" step="0.1" placeholder="Optional" 
                         style="width:100%; padding:6px 10px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:inherit;">
@@ -2122,7 +2122,7 @@ class GridMapper {
             <div style="display:flex; gap:8px; align-items:flex-start; margin-top:6px;">
                 <div class="form-group" style="flex:1; min-width:0; margin-bottom:0;">
                     <label style="display:flex; align-items:center; gap:4px; font-size:0.75rem; color:#8aacce; margin-bottom:3px;">
-                        <span><i data-lucide="pencil" class="icon-sm"></i></span> Bearing <span style="color:#6a7a8a; font-size:0.6rem;">(0-360°)</span>
+                        <span><i data-lucide="angle" class="icon-sm"></i></span> Bearing <span style="color:#6a7a8a; font-size:0.6rem;">(0-360°)</span>
                     </label>
                     <input type="number" class="triangulate-bearing" data-index="${index}" min="0" max="360" step="0.1" placeholder="Optional" 
                         style="width:100%; padding:4px 8px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:inherit; font-size:0.75rem;">
@@ -4273,7 +4273,7 @@ class GridMapper {
                     </span>
                     <span class="marker-actions">
                         <button class="edit-btn" data-id="${m.id}" title="Edit marker details">Edit</button>
-                        <button class="delete-btn" data-id="${m.id}" title="Delete marker"><i data-lucide="x" class="icon-sm"></i></button>
+                        <button class="delete-btn" data-id="${m.id}" title="Delete marker">❌</button>
                     </span>
                 </div>
             `;
