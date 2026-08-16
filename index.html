@@ -10,7 +10,7 @@
 <body>
     <div id="app">
         <header>
-            <h1>🗺️ GRID MAPPER</h1>
+            <h1><i data-lucide="map" class="icon-md"></i> GRID MAPPER</h1>
             <div class="header-controls">
                 <span class="grid-info-text">Grid Data</span>
                 <button id="exportBtn" class="btn">Export</button>
@@ -39,22 +39,22 @@
                         <div class="tool-controls">
                             <span id="cursorPos" class="cursor-position">--</span>
                             <button class="btn btn-tool active" data-tool="select">
-                                <i data-lucide="mouse-pointer" class="icon-sm"></i> Select
+                                <i data-lucide="mouse-pointer-2" class="icon-sm"></i> Select
                             </button>
                             <button class="btn btn-tool" data-tool="drag">
-                                <i data-lucide="icon-hand" class="icon-sm"></i> Drag
+                                <i data-lucide="hand" class="icon-sm"></i> Drag
                             </button>
                             <button class="btn btn-tool" data-tool="intelPen">
-                                <i data-lucide="icon-pen-tool" class="icon-sm"></i>
+                                <i data-lucide="pen-tool" class="icon-sm"></i>
                             </button>
                             <button class="btn btn-tool" data-tool="vectorPen">
-                                <i data-lucide="icon-arrow-up-right" class="icon-sm"></i>
+                                <i data-lucide="arrow-up-right" class="icon-sm"></i>
                             </button>
                             <button class="btn btn-tool" data-tool="compass">
-                                <i data-lucide="icon-compass" class="icon-sm"></i>
+                                <i data-lucide="compass" class="icon-sm"></i>
                             </button>
                             <button id="removeAllMeasurementsBtn" class="btn btn-tool" style="color:#ff6644; border-color:#8a3a3a; background:#3a1a1a; font-size:0.7rem; padding:2px 8px; height:28px;" title="Remove all intel, vectors, and compass drawings">
-                                <i data-lucide="icon-trash-2" class="icon-sm"></i> Clear Measurements
+                                <i data-lucide="trash-2" class="icon-sm"></i> Clear Measurements
                             </button>
                         </div>
                     </div>
@@ -74,8 +74,12 @@
                 <!-- ============================================================ -->
                 <div class="calculator-section">
                     <div class="calculator-tabs">
-                        <button class="calculator-tab active" data-tab="ballistic">🎯 Ballistic</button>
-                        <button class="calculator-tab" data-tab="flighttime">⏱️ Flight Time</button>
+                        <button class="calculator-tab active" data-tab="ballistic">
+                            <i data-lucide="target" class="icon-sm"></i> Ballistic
+                        </button>
+                        <button class="calculator-tab" data-tab="flighttime">
+                            <i data-lucide="clock" class="icon-sm"></i> Flight Time
+                        </button>
                     </div>
 
                     <!-- Ballistic Calculator -->
@@ -113,7 +117,7 @@
                                 </div>
                             </div>
                             <div class="calc-info" id="ballisticInfo">
-                                💡 Elevation is forced by the game: E = (Range × 12) / Charge
+                                <i data-lucide="lightbulb" class="icon-sm"></i>  Elevation is forced by the game: E = (Range × 12) / Charge
                             </div>
                         </div>
                     </div>
@@ -162,7 +166,7 @@
                                     </div>
                                 </div>
                                 <div class="calc-info" id="flightReverseInfo">
-                                    💡 Enter desired flight time and range. Calculator finds the optimal powder charge and required elevation.
+                                    <i data-lucide="lightbulb" class="icon-sm"></i>  Enter desired flight time and range. Calculator finds the optimal powder charge and required elevation.
                                 </div>
                             </div>
                         </div>
@@ -174,7 +178,7 @@
             <div class="tools-panel">
                 <!-- Marker Tools -->
                 <div class="panel-section">
-                    <h3>📌 Markers</h3>
+                    <h3><i data-lucide="map-pin" class="icon-md"></i> Markers</h3>
                     <div id="addMarkerSection"></div>
                     <div class="marker-list" id="markerList">
                         <p class="empty-message">No markers yet. Right-click on grid to add.</p>
@@ -184,16 +188,16 @@
                 <!-- Intel Display Section -->
                 <div class="panel-section intel-section">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid #2a3a4a; padding-bottom:8px;">
-                        <h3 class="intel-title" style="margin:0; border-bottom:none; padding-bottom:0;">📊 Intel</h3>
+                        <h3 class="intel-title" style="margin:0; border-bottom:none; padding-bottom:0;"><i data-lucide="bar-chart-2" class="icon-md"></i> Intel</h3>
                         <button id="removeAllIntelBtn" class="btn btn-sm" style="background:#3a2a2a; color:#ff8866; border:1px solid #8a3a3a; border-radius:3px; cursor:pointer; padding:2px 10px; font-size:0.7rem; font-family:inherit;">
-                            🗑️ Remove All Intel
+                            <i data-lucide="trash-2" class="icon-sm"></i> Remove All Intel
                         </button>
                     </div>
                     
                     <!-- Tab Navigation -->
                     <div class="intel-tabs">
                         <button class="intel-tab active" data-tab="marker">Per Marker</button>
-                        <button class="intel-tab" data-tab="triangulate">📐 Triangulate</button>
+                        <button class="intel-tab" data-tab="triangulate"><i data-lucide="pencil-ruler" class="icon-sm"></i> Triangulate</button>
                     </div>
                     
                     <!-- Tab Content: Per Marker Intel -->
@@ -209,23 +213,23 @@
                             <div class="form-group">
                                 <label>Create as:</label>
                                 <select id="triangulateTargetType">
-                                    <option value="target">🎯 Target</option>
-                                    <option value="spotter">👁️ Spotter</option>
-                                    <option value="reference">🟢 Reference Point</option>
-                                    <option value="nest">🏠 Iron Nest</option>
+                                    <option value="target"><i data-lucide="crosshair" class="icon-sm"></i> Target</option>
+                                    <option value="spotter"><i data-lucide="binoculars" class="icon-sm"></i> Spotter</option>
+                                    <option value="reference"><i data-lucide="flag-triangle-right" class="icon-sm"></i> Reference Point</option>
+                                    <option value="nest"><i data-lucide="star" class="icon-sm"></i> Iron Nest</option>
                                 </select>
                             </div>
                             
                             <div id="triangulateItems">
                             </div>
                             
-                            <button id="addTriangulateItemBtn" class="btn btn-sm">➕ Add Intel Item</button>
-                            <button id="calculateTriangulateBtn" class="btn btn-primary" style="margin-top:10px; width:100%;">📐 Calculate Intersection</button>
+                            <button id="addTriangulateItemBtn" class="btn btn-sm"><i data-lucide="circle-plus" class="icon-sm"></i> Add Intel Item</button>
+                            <button id="calculateTriangulateBtn" class="btn btn-primary" style="margin-top:10px; width:100%;"><i data-lucide="pencil-ruler" class="icon-sm"></i> Calculate Intersection</button>
                             
                             <div id="triangulateResults" style="margin-top:10px; display:none;">
                                 <div style="background:#0a121a; padding:10px; border-radius:3px; border-left:3px solid #ffd93d;">
                                     <div id="triangulateResultDetails"></div>
-                                    <button id="triangulateCreateMarkerBtn" class="btn btn-sm" style="margin-top:8px; background:#2a5a3a; color:#88ffaa;">➕ Create Marker</button>
+                                    <button id="triangulateCreateMarkerBtn" class="btn btn-sm" style="margin-top:8px; background:#2a5a3a; color:#88ffaa;"><i data-lucide="circle-plus" class="icon-sm"></i> Create Marker</button>
                                 </div>
                             </div>
                         </div>

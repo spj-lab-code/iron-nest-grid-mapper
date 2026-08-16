@@ -609,11 +609,11 @@ class GridMapper {
         const info = document.getElementById('drawingInfo');
         if (info) {
             const labels = {
-                select: '🖱️ Click to select markers, drag to move them',
-                drag: '✋ Drag to pan around the map',
-                intelPen: '✏️ Click and drag to draw an Intel arrow',
-                vectorPen: '🖍️ Click and drag to draw a Vector arrow',
-                compass: '⚪ Click and drag to draw a distance circle (drafting compass)'
+                select: '<i data-lucide="mouse-pointer-2" class="icon-sm"></i> Click to select markers, drag to move them',
+                drag: '<i data-lucide="hand" class="icon-sm"></i> Drag to pan around the map',
+                intelPen: '<i data-lucide="pencil" class="icon-sm"></i> Click and drag to draw an Intel arrow',
+                vectorPen: '<i data-lucide="pen-tool" class="icon-sm"></i> Click and drag to draw a Vector arrow',
+                compass: '<i data-lucide="drafting-compass" class="icon-sm"></i> Click and drag to draw a distance circle (drafting compass)'
             };
             info.innerHTML = `<p style="color:#88bbff; font-size:0.8rem;">${labels[tool] || ''}</p>`;
         }
@@ -1208,11 +1208,11 @@ class GridMapper {
             <div class="intel-entry">
                 <div class="intel-entry-header">
                     <span class="intel-label">#${index + 1}</span>
-                    <button class="intel-remove-btn" onclick="window.gridMapper.removeIntel('${marker.id}', '${entry.id}')">✕</button>
+                    <button class="intel-remove-btn" onclick="window.gridMapper.removeIntel('${marker.id}', '${entry.id}')"><i data-lucide="x" class="icon-sm"></i></button>
                 </div>
                 <div class="intel-entry-details">
-                    ${entry.bearing !== null ? `<span>🧭 ${entry.bearing.toFixed(1)}°</span>` : ''}
-                    ${entry.distance !== null ? `<span>📏 ${entry.distance.toFixed(2)} km</span>` : ''}
+                    ${entry.bearing !== null ? `<span><i data-lucide="ruler-dimension-line" class="icon-sm"></i> ${entry.bearing.toFixed(1)}°</span>` : ''}
+                    ${entry.distance !== null ? `<span><i data-lucide="ruler-dimension-line" class="icon-sm"></i> ${entry.distance.toFixed(2)} km</span>` : ''}
                     ${entry.bearing === null && entry.distance === null ? '<span style="color:#666;">(empty)</span>' : ''}
                 </div>
             </div>
@@ -1328,23 +1328,23 @@ class GridMapper {
             
             html = `
                 <div class="menu-header">${marker.label} (${marker.gridRef})</div>
-                <div class="menu-item" data-action="editPosition" style="color:#4ecdc4;">✏️ Edit Marker</div>
-                <div class="menu-item" data-action="intel" style="color:#4ecdc4;">${hasIntel ? '📊 Edit Intel' : '📊 Add Intel'}</div>
+                <div class="menu-item" data-action="editPosition" style="color:#4ecdc4;"><i data-lucide="pencil" class="icon-sm"></i> Edit Marker</div>
+                <div class="menu-item" data-action="intel" style="color:#4ecdc4;">${hasIntel ? '<i data-lucide="bar-chart-2" class="icon-md"></i> Edit Intel' : '<i data-lucide="bar-chart-2" class="icon-md"></i> Add Intel'}</div>
             `;
             
             // For Target markers: Add "Create Vector from Iron Nest" option
             if (isTarget) {
                 const nests = this.markerManager.getMarkersByType('nest');
                 if (nests.length > 0) {
-                    const label = hasAutoIntel ? '🔄 Recreate Vector' : '🎯 Create Vector from Iron Nest';
+                    const label = hasAutoIntel ? '<i data-lucide="crosshair" class="icon-sm"></i> Recreate Vector' : '<i data-lucide="crosshair" class="icon-sm"></i> Create Vector from Iron Nest';
                     html += `<div class="menu-item" data-action="createVector" style="color:#ff4444;">${label}</div>`;
                 }
             }
             
             if (hasIntel) {
-                html += `<div class="menu-item" data-action="removeIntel" style="color:#ff8866;">🗑️ Remove Intel</div>`;
+                html += `<div class="menu-item" data-action="removeIntel" style="color:#ff8866;"><i data-lucide="trash-2" class="icon-sm"></i> Remove Intel</div>`;
             }
-            html += `<div class="menu-item" data-action="delete" style="color:#ff6644;">🗑️ Delete ${isNest ? 'Iron Nest' : 'Marker'}</div>`;
+            html += `<div class="menu-item" data-action="delete" style="color:#ff6644;"><i data-lucide="trash-2" class="icon-sm"></i> Delete ${isNest ? 'Iron Nest' : 'Marker'}</div>`;
 
         } else if (item && item.type === 'freeDrawing') {
             // Free drawings are now deleted directly in the contextmenu event listener
@@ -1353,8 +1353,8 @@ class GridMapper {
             const drawing = item.item;
             const isAuto = drawing.autoIntel;
             html = `
-                <div class="menu-header">${drawing.label} Arrow ${drawing.bearing !== undefined ? ` | Brg: ${drawing.bearing.toFixed(0)}°` : ''}${drawing.distance !== undefined ? ` | Dist: ${drawing.distance.toFixed(2)}km` : ''}${isAuto ? ' 🔄' : ''}</div>
-                <div class="menu-item" data-action="deleteDrawing" style="color:#ff6644;">🗑️ Delete Drawing</div>
+                <div class="menu-header">${drawing.label} Arrow ${drawing.bearing !== undefined ? ` | Brg: ${drawing.bearing.toFixed(0)}°` : ''}${drawing.distance !== undefined ? ` | Dist: ${drawing.distance.toFixed(2)}km` : ''}${isAuto ? ' <i data-lucide="rotate-ccw" class="icon-sm"></i>' : ''}</div>
+                <div class="menu-item" data-action="deleteDrawing" style="color:#ff6644;"><i data-lucide="trash-2" class="icon-sm"></i> Delete Drawing</div>
             `;
 
         } else if (grid) {
@@ -1363,16 +1363,16 @@ class GridMapper {
             const hasNest = this.markerManager.getMarkersByType('nest').length > 0;
             
             html = `<div class="menu-header highlight">${ref}</div>`;
-            // REMOVED: html += `<div class="menu-item" data-action="addMarker" style="color:#4ecdc4;">📌 Add Marker at ${ref}</div>`;
+            // REMOVED: html += `<div class="menu-item" data-action="addMarker" style="color:#4ecdc4;"><i data-lucide="map-pin" class="icon-md"></i> Add Marker at ${ref}</div>`;
             if (hasNest) {
-                html += `<div class="menu-item" data-action="moveNest" style="color:#4a7db5;">🏠 Move Iron Nest here</div>`;
+                html += `<div class="menu-item" data-action="moveNest" style="color:#4a7db5;"><i data-lucide="star" class="icon-sm"></i> Move Iron Nest here</div>`;
             } else {
-                html += `<div class="menu-item" data-action="addNest" style="color:#4a7db5;">🏠 Add Iron Nest</div>`;
+                html += `<div class="menu-item" data-action="addNest" style="color:#4a7db5;"><i data-lucide="star" class="icon-sm"></i> Add Iron Nest</div>`;
             }
             html += `
-                <div class="menu-item" data-action="addSpotter" style="color:#4a7db5;">👁️ Add Spotter</div>
-                <div class="menu-item" data-action="addReference" style="color:#2ecc71;">🟢 Add Reference</div>
-                <div class="menu-item" data-action="addTarget" style="color:#e74c3c;">🎯 Add Target</div>
+                <div class="menu-item" data-action="addSpotter" style="color:#4a7db5;"><i data-lucide="binoculars" class="icon-sm"></i> Add Spotter</div>
+                <div class="menu-item" data-action="addReference" style="color:#2ecc71;"><i data-lucide="flag-triangle-right" class="icon-sm"></i> Add Reference</div>
+                <div class="menu-item" data-action="addTarget" style="color:#e74c3c;"><i data-lucide="crosshair" class="icon-sm"></i> Add Target</div>
             `;
         }
 
@@ -1603,14 +1603,14 @@ class GridMapper {
 
         panel.innerHTML = `
             <div class="panel-header">
-                <h3>✎ Edit ${typeLabels[marker.type] || marker.type}</h3>
-                <button id="closeEditPanel" class="close-btn">✕</button>
+                <h3><i data-lucide="pencil" class="icon-md"></i> Edit ${typeLabels[marker.type] || marker.type}</h3>
+                <button id="closeEditPanel" class="close-btn"><i data-lucide="x" class="icon-sm"></i></button>
             </div>
             
             <div class="form-group" style="display:flex; gap:8px; align-items:flex-end;">
                 <div style="flex:1;">
                     <label style="display:block; color:#8aacce; font-size:0.85rem; margin-bottom:4px;">
-                        <span>📌</span> Marker Type
+                        <span><i data-lucide="map-pin" class="icon-md"></i></span> Marker Type
                     </label>
                     <select id="editType" style="width:100%; height: 36px; padding:6px 10px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:inherit;">
                         ${typeOptions}
@@ -1643,7 +1643,7 @@ class GridMapper {
             </div>
             
             <div class="btn-group">
-                <button id="saveEditBtn" class="btn-save">💾 Save</button>
+                <button id="saveEditBtn" class="btn-save"><i data-lucide="save" class="icon-sm"></i> Save</button>
                 <button id="cancelEditBtn" class="btn-cancel">Cancel</button>
             </div>
         `;
@@ -1661,7 +1661,7 @@ class GridMapper {
             // Parse the current main reference
             const mainMatch = mainRefInput.value.trim().toUpperCase().match(/^([A-T])([1-9]|10)$/);
             if (!mainMatch) {
-                errorDiv.textContent = '⚠️ Invalid main grid reference (e.g., A1-T10)';
+                errorDiv.textContent = '<i data-lucide="triangle-alert" class="icon-sm"></i> Invalid main grid reference (e.g., A1-T10)';
                 errorDiv.style.display = 'block';
                 mainRefInput.style.borderColor = '#ff6644';
                 setTimeout(() => {
@@ -1673,7 +1673,7 @@ class GridMapper {
             // Parse the current subgrid reference
             const subMatch = subRefInput.value.trim().match(/^([0-9.]+):([0-9.]+)$/);
             if (!subMatch) {
-                errorDiv.textContent = '⚠️ Invalid sub-grid reference (e.g., 5.30:2.70)';
+                errorDiv.textContent = '<i data-lucide="triangle-alert" class="icon-sm"></i> Invalid sub-grid reference (e.g., 5.30:2.70)';
                 errorDiv.style.display = 'block';
                 subRefInput.style.borderColor = '#ff6644';
                 setTimeout(() => {
@@ -1692,7 +1692,7 @@ class GridMapper {
             const rawSubY = parseFloat(subMatch[2]);
             
             if (isNaN(rawSubX) || isNaN(rawSubY) || rawSubX < 0 || rawSubX > 9.99 || rawSubY < 0 || rawSubY > 9.99) {
-                errorDiv.textContent = '⚠️ Sub-grid values must be between 0 and 9.99';
+                errorDiv.textContent = '<i data-lucide="triangle-alert" class="icon-sm"></i> Sub-grid values must be between 0 and 9.99';
                 errorDiv.style.display = 'block';
                 subRefInput.style.borderColor = '#ff6644';
                 setTimeout(() => {
@@ -1789,7 +1789,7 @@ class GridMapper {
         
         // Validate main reference
         if (!mainRef) {
-            errorDiv.textContent = '⚠️ Please enter a main grid reference (e.g., A1)';
+            errorDiv.textContent = '<i data-lucide="triangle-alert" class="icon-sm"></i> Please enter a main grid reference (e.g., A1)';
             errorDiv.style.display = 'block';
             mainRefInput.style.borderColor = '#ff6644';
             return false;
@@ -1797,7 +1797,7 @@ class GridMapper {
         
         const mainMatch = mainRef.match(/^([A-T])([1-9]|10)$/);
         if (!mainMatch) {
-            errorDiv.textContent = '⚠️ Invalid main grid reference. Use A-T + 1-10 (e.g., A1, T10)';
+            errorDiv.textContent = '<i data-lucide="triangle-alert" class="icon-sm"></i> Invalid main grid reference. Use A-T + 1-10 (e.g., A1, T10)';
             errorDiv.style.display = 'block';
             mainRefInput.style.borderColor = '#ff6644';
             return false;
@@ -1809,7 +1809,7 @@ class GridMapper {
         // Validate subgrid reference
         const subMatch = subRef.match(/^([0-9.]+):([0-9.]+)$/);
         if (!subMatch) {
-            errorDiv.textContent = '⚠️ Invalid sub-grid format. Use X.X:Y.Y (e.g., 5.30:2.70)';
+            errorDiv.textContent = '<i data-lucide="triangle-alert" class="icon-sm"></i> Invalid sub-grid format. Use X.X:Y.Y (e.g., 5.30:2.70)';
             errorDiv.style.display = 'block';
             subRefInput.style.borderColor = '#ff6644';
             return false;
@@ -1819,7 +1819,7 @@ class GridMapper {
         const rawSubY = parseFloat(subMatch[2]);
         
         if (isNaN(rawSubX) || isNaN(rawSubY) || rawSubX < 0 || rawSubX > 9.99 || rawSubY < 0 || rawSubY > 9.99) {
-            errorDiv.textContent = '⚠️ Sub-grid values must be between 0 and 9.99';
+            errorDiv.textContent = '<i data-lucide="triangle-alert" class="icon-sm"></i> Sub-grid values must be between 0 and 9.99';
             errorDiv.style.display = 'block';
             subRefInput.style.borderColor = '#ff6644';
             return false;
@@ -1828,7 +1828,7 @@ class GridMapper {
         // Check if position is already taken (by another marker)
         const existing = this.markerManager.getMarkerAt(col, row, rawSubX, rawSubY);
         if (existing && existing.id !== markerId) {
-            errorDiv.textContent = `⚠️ Position already occupied by ${existing.label}`;
+            errorDiv.textContent = `<i data-lucide="triangle-alert" class="icon-sm"></i> Position already occupied by ${existing.label}`;
             errorDiv.style.display = 'block';
             mainRefInput.style.borderColor = '#ff6644';
             subRefInput.style.borderColor = '#ff6644';
@@ -1950,8 +1950,8 @@ class GridMapper {
 
         panel.innerHTML = `
             <div class="panel-header">
-                <h3>📊 Add Intel for ${marker.label}</h3>
-                <button id="closeIntelPanel" class="close-btn">✕</button>
+                <h3><i data-lucide="bar-chart-2" class="icon-md"></i> Add Intel for ${marker.label}</h3>
+                <button id="closeIntelPanel" class="close-btn"><i data-lucide="x" class="icon-sm"></i></button>
             </div>
             <div style="margin-bottom:15px;">
                 <label style="display:block; color:#8aacce; font-size:0.85rem; margin-bottom:4px;">Grid Reference:</label>
@@ -1967,7 +1967,7 @@ class GridMapper {
             <div style="display:flex; gap:12px; align-items:flex-start;">
                 <div class="form-group" style="flex:1; min-width:0; margin-bottom:0;">
                     <label style="display:flex; align-items:center; gap:4px; font-size:0.85rem; color:#8aacce; margin-bottom:4px;">
-                        <span>✏️</span> Bearing <span style="color:#6a7a8a; font-size:0.65rem; font-weight:normal;">(0-360°)</span>
+                        <span><i data-lucide="pencil" class="icon-sm"></i></span> Bearing <span style="color:#6a7a8a; font-size:0.65rem; font-weight:normal;">(0-360°)</span>
                     </label>
                     <input type="number" id="intelBearing" min="0" max="360" step="0.1" placeholder="Optional" 
                         style="width:100%; padding:6px 10px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:inherit;">
@@ -1976,7 +1976,7 @@ class GridMapper {
                 
                 <div class="form-group" style="flex:1; min-width:0; margin-bottom:0;">
                     <label style="display:flex; align-items:center; gap:4px; font-size:0.85rem; color:#8aacce; margin-bottom:4px;">
-                        <span>⚪</span> Distance <span style="color:#6a7a8a; font-size:0.65rem; font-weight:normal;">(km)</span>
+                        <span><i data-lucide="drafting-compass" class="icon-sm"></i></span> Distance <span style="color:#6a7a8a; font-size:0.65rem; font-weight:normal;">(km)</span>
                     </label>
                     <input type="number" id="intelDistance" min="0" max="999.9" step="0.1" placeholder="Optional" 
                         style="width:100%; padding:6px 10px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:inherit;">
@@ -1984,10 +1984,10 @@ class GridMapper {
             </div>
             
             <div class="info-box" style="margin-top:12px; background:#0a121a; padding:8px; border-radius:3px; font-size:0.8rem; color:#6a7a8a;">
-                💡 Add a bearing, distance, or both. You can add multiple intel entries per marker.
+                <i data-lucide="lightbulb" class="icon-sm"></i> Add a bearing, distance, or both. You can add multiple intel entries per marker.
             </div>
             <div class="btn-group" style="display:flex; gap:10px; margin-top:12px;">
-                <button id="saveIntelBtn" class="btn-save" style="flex:1; padding:8px; background:#2a5a3a; color:#88ffaa; border:1px solid #3a8a5a; border-radius:3px; cursor:pointer; font-family:inherit;">💾 Add Intel</button>
+                <button id="saveIntelBtn" class="btn-save" style="flex:1; padding:8px; background:#2a5a3a; color:#88ffaa; border:1px solid #3a8a5a; border-radius:3px; cursor:pointer; font-family:inherit;"><i data-lucide="save" class="icon-sm"></i> Add Intel</button>
                 <button id="cancelIntelBtn" class="btn-cancel" style="flex:1; padding:8px; background:#3a2a2a; color:#ff8866; border:1px solid #8a3a3a; border-radius:3px; cursor:pointer; font-family:inherit;">Cancel</button>
             </div>
         `;
@@ -2108,7 +2108,7 @@ class GridMapper {
         item.innerHTML = `
             <div class="form-group">
                 <label style="display:flex; align-items:center; gap:4px; font-size:0.85rem; color:#8aacce; margin-bottom:4px;">
-                    <span>📌</span> Marker:
+                    <span><i data-lucide="map-pin" class="icon-md"></i></span> Marker:
                 </label>
                 <select class="triangulate-marker" data-index="${index}" style="width:100%; padding:6px 10px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:inherit;">
                     <option value="">Select marker...</option>
@@ -2122,7 +2122,7 @@ class GridMapper {
             <div style="display:flex; gap:8px; align-items:flex-start; margin-top:6px;">
                 <div class="form-group" style="flex:1; min-width:0; margin-bottom:0;">
                     <label style="display:flex; align-items:center; gap:4px; font-size:0.75rem; color:#8aacce; margin-bottom:3px;">
-                        <span>✏️</span> Bearing <span style="color:#6a7a8a; font-size:0.6rem;">(0-360°)</span>
+                        <span><i data-lucide="pencil" class="icon-sm"></i></span> Bearing <span style="color:#6a7a8a; font-size:0.6rem;">(0-360°)</span>
                     </label>
                     <input type="number" class="triangulate-bearing" data-index="${index}" min="0" max="360" step="0.1" placeholder="Optional" 
                         style="width:100%; padding:4px 8px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:inherit; font-size:0.75rem;">
@@ -2130,14 +2130,14 @@ class GridMapper {
                 
                 <div class="form-group" style="flex:1; min-width:0; margin-bottom:0;">
                     <label style="display:flex; align-items:center; gap:4px; font-size:0.75rem; color:#8aacce; margin-bottom:3px;">
-                        <span>⚪</span> Distance <span style="color:#6a7a8a; font-size:0.6rem;">(km)</span>
+                        <span><i data-lucide="drafting-compass" class="icon-sm"></i></span> Distance <span style="color:#6a7a8a; font-size:0.6rem;">(km)</span>
                     </label>
                     <input type="number" class="triangulate-distance" data-index="${index}" min="0" step="0.1" placeholder="Optional" 
                         style="width:100%; padding:4px 8px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:inherit; font-size:0.75rem;">
                 </div>
             </div>
             
-            <button class="btn btn-sm btn-remove-triangulate" data-index="${index}" style="color:#ff6644; background:none; border:none; cursor:pointer; font-size:0.7rem; padding:4px 6px; border-radius:3px; transition:background 0.2s; margin-top:4px;">✕ Remove</button>
+            <button class="btn btn-sm btn-remove-triangulate" data-index="${index}" style="color:#ff6644; background:none; border:none; cursor:pointer; font-size:0.7rem; padding:4px 6px; border-radius:3px; transition:background 0.2s; margin-top:4px;"><i data-lucide="x" class="icon-sm"></i> Remove</button>
         `;
         return item;
     }
@@ -2730,14 +2730,14 @@ class GridMapper {
         }
         
         if (results.length > 1) {
-            let html = '<div style="margin-top:4px; margin-bottom:6px; color:#ffd93d; font-weight:bold;">🔍 Multiple intersections found. Click "Create" to add marker:</div>';
+            let html = '<div style="margin-top:4px; margin-bottom:6px; color:#ffd93d; font-weight:bold;"><i data-lucide="search" class="icon-sm"></i> Multiple intersections found. Click "Create" to add marker:</div>';
             
             results.forEach((result, index) => {
                 const inter = result.intersection;
                 const typeLabel = {
-                    'bearing-bearing': '🧭 Bearing×Bearing',
-                    'bearing-distance': '🧭📏 Bearing×Distance',
-                    'distance-distance': '📏📏 Distance×Distance'
+                    'bearing-bearing': '<i data-lucide="ruler-dimension-line" class="icon-sm"></i> Bearing×Bearing',
+                    'bearing-distance': '<i data-lucide="ruler-dimension-line" class="icon-sm"></i><i data-lucide="ruler-dimension-line" class="icon-sm"></i> Bearing×Distance',
+                    'distance-distance': '<i data-lucide="ruler-dimension-line" class="icon-sm"></i><i data-lucide="ruler-dimension-line" class="icon-sm"></i> Distance×Distance'
                 }[result.type] || 'Intersection';
                 
                 html += `
@@ -2756,7 +2756,7 @@ class GridMapper {
                             </div>
                             <button onclick="window.gridMapper.createMarkerFromTriangulateResult(${index})" 
                                     style="padding:3px 14px; background:#2a5a3a; color:#88ffaa; border:1px solid #3a8a5a; border-radius:3px; cursor:pointer; font-size:0.7rem; font-family:inherit; white-space:nowrap; margin-left:8px;">
-                                ➕ Create
+                                <i data-lucide="circle-plus" class="icon-sm"></i> Create
                             </button>
                         </div>
                     </div>
@@ -2803,10 +2803,10 @@ class GridMapper {
         container.style.display = 'block';
         
         let typeLabel = {
-            'bearing-bearing': '🧭 Bearing × Bearing',
-            'bearing-distance': '🧭📏 Bearing × Distance',
-            'distance-distance': '📏📏 Distance × Distance',
-            'bearing-distance-single': '🧭📏 Bearing + Distance (Single Marker)'
+            'bearing-bearing': '<i data-lucide="ruler-dimension-line" class="icon-sm"></i> Bearing × Bearing',
+            'bearing-distance': '<i data-lucide="ruler-dimension-line" class="icon-sm"></i><i data-lucide="ruler-dimension-line" class="icon-sm"></i> Bearing × Distance',
+            'distance-distance': '<i data-lucide="ruler-dimension-line" class="icon-sm"></i><i data-lucide="ruler-dimension-line" class="icon-sm"></i> Distance × Distance',
+            'bearing-distance-single': '<i data-lucide="ruler-dimension-line" class="icon-sm"></i><i data-lucide="ruler-dimension-line" class="icon-sm"></i> Bearing + Distance (Single Marker)'
         }[best.type] || 'Intersection';
         
         const targetType = document.getElementById('triangulateTargetType').value;
@@ -2822,23 +2822,23 @@ class GridMapper {
                     ${best.item1 ? best.item1.marker.label : '?'} → ${best.item2 ? best.item2.marker.label : '?'}
                 </div>
                 <div style="font-size:0.75rem; color:#8aacce; margin-top:2px;">
-                    ${best.item1 && best.item1.bearing !== null ? `🧭 Brg: ${best.item1.bearing}°` : ''}
-                    ${best.item1 && best.item1.distance !== null ? ` 📏 Dist: ${best.item1.distance}km` : ''}
-                    ${best.item2 && best.item2.bearing !== null ? ` | 🧭 Brg: ${best.item2.bearing}°` : ''}
-                    ${best.item2 && best.item2.distance !== null ? ` 📏 Dist: ${best.item2.distance}km` : ''}
+                    ${best.item1 && best.item1.bearing !== null ? `<i data-lucide="ruler-dimension-line" class="icon-sm"></i> Brg: ${best.item1.bearing}°` : ''}
+                    ${best.item1 && best.item1.distance !== null ? ` <i data-lucide="ruler-dimension-line" class="icon-sm"></i> Dist: ${best.item1.distance}km` : ''}
+                    ${best.item2 && best.item2.bearing !== null ? ` | <i data-lucide="ruler-dimension-line" class="icon-sm"></i> Brg: ${best.item2.bearing}°` : ''}
+                    ${best.item2 && best.item2.distance !== null ? ` <i data-lucide="ruler-dimension-line" class="icon-sm"></i> Dist: ${best.item2.distance}km` : ''}
                 </div>
                 <div style="font-size:0.75rem; color:#8aacce; margin-top:2px;">
                     Creating as: ${document.getElementById('triangulateTargetType').selectedOptions[0].text}
                 </div>
                 <div style="font-size:0.75rem; color:#ffd93d; margin-top:4px;">
-                    💡 Intel will be added to the reference markers
+                    <i data-lucide="lightbulb" class="icon-sm"></i> Intel will be added to the reference markers
                 </div>
                 <div style="font-size:0.7rem; color:#6a7a8a; margin-top:4px;">
-                    👆 Hover over this card to preview on grid
+                    <i data-lucide="mouse-pointer-2" class="icon-sm"></i> Hover over this card to preview on grid
                 </div>
                 <button onclick="window.gridMapper.createMarkerFromTriangulateResult(0)" 
                         style="margin-top:8px; padding:4px 14px; background:#2a5a3a; color:#88ffaa; border:1px solid #3a8a5a; border-radius:3px; cursor:pointer; font-size:0.75rem; font-family:inherit;">
-                    ➕ Create Marker
+                    <i data-lucide="circle-plus" class="icon-sm"></i> Create Marker
                 </button>
             </div>
         `;
@@ -3041,7 +3041,7 @@ class GridMapper {
                 </div>
                 <button onclick="window.gridMapper.createMarkerFromTriangulateResult(0)" 
                         style="margin-top:8px; padding:4px 14px; background:#2a5a3a; color:#88ffaa; border:1px solid #3a8a5a; border-radius:3px; cursor:pointer; font-size:0.75rem; font-family:inherit;">
-                    ➕ Create Marker
+                    <i data-lucide="circle-plus" class="icon-sm"></i> Create Marker
                 </button>
             </div>
         `;
@@ -3759,7 +3759,7 @@ class GridMapper {
         ctx.font = '9px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'bottom';
-        ctx.fillText('📌 Preview', pos.x, pos.y - 22);
+        ctx.fillText('<i data-lucide="map-pin" class="icon-md"></i> Preview', pos.x, pos.y - 22);
         
         ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
         ctx.font = '7px monospace';
@@ -4022,7 +4022,7 @@ class GridMapper {
             ctx.font = '9px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'bottom';
-            ctx.fillText('📌 Preview', pos.x, pos.y - 22);
+            ctx.fillText('<i data-lucide="map-pin" class="icon-md"></i> Preview', pos.x, pos.y - 22);
             
             ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
             ctx.font = '7px monospace';
@@ -4269,11 +4269,11 @@ class GridMapper {
                         <span class="marker-dot" style="color:${m.color}">●</span>
                         <span class="marker-label">${label}</span>
                         <span class="marker-grid-ref" data-id="${m.id}" title="Click to edit position">${m.gridRef}${offCenterLabel}</span>
-                        ${hasIntelData ? '<span class="marker-intel-badge">📊</span>' : ''}
+                        ${hasIntelData ? '<span class="marker-intel-badge"><i data-lucide="bar-chart-2" class="icon-md"></i></span>' : ''}
                     </span>
                     <span class="marker-actions">
                         <button class="edit-btn" data-id="${m.id}" title="Edit marker details">Edit</button>
-                        <button class="delete-btn" data-id="${m.id}" title="Delete marker">✕</button>
+                        <button class="delete-btn" data-id="${m.id}" title="Delete marker"><i data-lucide="x" class="icon-sm"></i></button>
                     </span>
                 </div>
             `;
@@ -4558,14 +4558,14 @@ class GridMapper {
                 <div style="color:#8aacce; font-size:0.8rem; margin-bottom:6px;">Add marker with intel:</div>
                 <div style="display:flex; gap:6px; flex-wrap:wrap;">
                     <select id="addMarkerType" style="flex:1; min-width:80px; padding:4px 6px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:inherit; font-size:0.75rem;">
-                        <option value="nest">🏠 Iron Nest</option>
-                        <option value="spotter">👁️ Spotter</option>
-                        <option value="reference">🟢 Reference</option>
-                        <option value="target">🎯 Target</option>
+                        <option value="nest"><i data-lucide="star" class="icon-sm"></i> Iron Nest</option>
+                        <option value="spotter"><i data-lucide="binoculars" class="icon-sm"></i> Spotter</option>
+                        <option value="reference"><i data-lucide="flag-triangle-right" class="icon-sm"></i> Reference</option>
+                        <option value="target"><i data-lucide="crosshair" class="icon-sm"></i> Target</option>
                     </select>
                     <input type="text" id="addMarkerMainRef" placeholder="A1" style="flex:1; min-width:50px; padding:4px 6px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:monospace; font-size:0.75rem;">
                     <input type="text" id="addMarkerSubRef" placeholder="0:0" style="flex:1; min-width:50px; padding:4px 6px; background:#0a121a; color:#b0c4de; border:1px solid #2a3a4a; border-radius:3px; font-family:monospace; font-size:0.75rem;">
-                    <button id="addMarkerByPosBtn" style="padding:4px 10px; background:#2a5a3a; color:#88ffaa; border:1px solid #3a8a5a; border-radius:3px; cursor:pointer; font-size:0.75rem; font-family:inherit;">➕ Add</button>
+                    <button id="addMarkerByPosBtn" style="padding:4px 10px; background:#2a5a3a; color:#88ffaa; border:1px solid #3a8a5a; border-radius:3px; cursor:pointer; font-size:0.75rem; font-family:inherit;"><i data-lucide="circle-plus" class="icon-sm"></i> Add</button>
                 </div>
                 <div style="color:#6a7a8a; font-size:0.6rem; margin-top:3px;">Main-Grid: A-T + 1-10 | Sub-Grid: 0:0 (OC = Off-Centered)</div>
             </div>
@@ -4682,21 +4682,21 @@ class GridMapper {
 
         popup.innerHTML = `
             <div class="panel-header">
-                <h3>📌 Add Marker</h3>
-                <button id="closePopupBtn" class="close-btn">✕</button>
+                <h3><i data-lucide="map-pin" class="icon-md"></i> Add Marker</h3>
+                <button id="closePopupBtn" class="close-btn"><i data-lucide="x" class="icon-sm"></i></button>
             </div>
             <div class="position-display">Position: <strong>${fullRef}</strong></div>
             <div style="margin-bottom:12px;">
                 <label>Marker Type:</label>
                 <select id="popupMarkerType">
-                    <option value="nest">🏠 Iron Nest</option>
-                    <option value="spotter">👁️ Spotter</option>
-                    <option value="reference">🟢 Reference Point</option>
-                    <option value="target">🎯 Target</option>
+                    <option value="nest"><i data-lucide="star" class="icon-sm"></i> Iron Nest</option>
+                    <option value="spotter"><i data-lucide="binoculars" class="icon-sm"></i> Spotter</option>
+                    <option value="reference"><i data-lucide="flag-triangle-right" class="icon-sm"></i> Reference Point</option>
+                    <option value="target"><i data-lucide="crosshair" class="icon-sm"></i> Target</option>
                 </select>
             </div>
             <div class="btn-group">
-                <button id="popupAddBtn" class="btn-add">➕ Add Marker</button>
+                <button id="popupAddBtn" class="btn-add"><i data-lucide="circle-plus" class="icon-sm"></i> Add Marker</button>
                 <button id="popupCancelBtn" class="btn-cancel">Cancel</button>
             </div>
         `;
@@ -4962,17 +4962,17 @@ class GridMapper {
                 const typeLabel = drawing.type === 'compass' ? 'Compass Circle' : `${drawing.label} Arrow`;
                 
                 let html = `
-                    <div class="menu-header">${typeLabel} ${drawing.bearing !== undefined ? `| Brg: ${drawing.bearing.toFixed(0)}°` : ''}${drawing.distance !== undefined ? ` | Dist: ${drawing.distance.toFixed(2)}km` : ''}${isAuto ? ' 🔄' : ''}</div>
+                    <div class="menu-header">${typeLabel} ${drawing.bearing !== undefined ? `| Brg: ${drawing.bearing.toFixed(0)}°` : ''}${drawing.distance !== undefined ? ` | Dist: ${drawing.distance.toFixed(2)}km` : ''}${isAuto ? ' <i data-lucide="rotate-ccw" class="icon-sm"></i>' : ''}</div>
                 `;
                 
                 if (gridPos) {
-                    html += `<div class="menu-item" data-action="addMarkerAtPosition" style="color:#4ecdc4;">📌 Add Marker at ${ref}</div>`;
+                    html += `<div class="menu-item" data-action="addMarkerAtPosition" style="color:#4ecdc4;"><i data-lucide="map-pin" class="icon-md"></i> Add Marker at ${ref}</div>`;
                 }
                 
                 if (isAuto) {
-                    html += `<div class="menu-item" data-action="deleteDrawing" style="color:#ff6644;">🗑️ Remove Auto Vector</div>`;
+                    html += `<div class="menu-item" data-action="deleteDrawing" style="color:#ff6644;"><i data-lucide="trash-2" class="icon-sm"></i> Remove Auto Vector</div>`;
                 } else {
-                    html += `<div class="menu-item" data-action="deleteDrawing" style="color:#ff6644;">🗑️ Delete Measurement</div>`;
+                    html += `<div class="menu-item" data-action="deleteDrawing" style="color:#ff6644;"><i data-lucide="trash-2" class="icon-sm"></i> Delete Measurement</div>`;
                 }
                 
                 html += `<div class="menu-item" data-action="cancel" style="color:#6a7a8a;">Cancel</div>`;
