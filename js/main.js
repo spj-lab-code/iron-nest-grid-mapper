@@ -207,8 +207,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update info with range status
         const isMax = Math.abs(clampedRange - maxRange) < 0.01;
         const infoMsg = isMax 
-            ? 'At maximum range! Elevation = 60° (forced by game)'
-            : `Elevation = (${clampedRange.toFixed(1)} × 12) / ${charge} = ${elevation.toFixed(2)}°`;
+            ? '⚡ At maximum range! Elevation = 60° (forced by game)'
+            : `💡 Elevation = (${clampedRange.toFixed(1)} × 12) / ${charge} = ${elevation.toFixed(2)}°`;
         infoDisplay.textContent = infoMsg;
         infoDisplay.style.borderLeftColor = isMax ? '#ffd93d' : '#4a7a8a';
     }
@@ -243,14 +243,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Feasibility status
             if (result.feasible) {
-                feasibleDisplay.textContent = '<i data-lucide="circle-check-big" class="icon-sm"></i> Yes';
+                feasibleDisplay.textContent = '✅ Yes';
                 feasibleDisplay.className = 'feasible-yes';
-                infoDisplay.textContent = `<i data-lucide="circle-check-big" class="icon-sm"></i> Optimal: Charge ${result.charge}, Elevation ${result.elevation.toFixed(2)}°, Actual flight time ${result.flightTime.toFixed(2)}s (target: ${targetTime.toFixed(1)}s, error: ${(result.error * 100).toFixed(0)}ms)`;
+                infoDisplay.textContent = `✅ Optimal: Charge ${result.charge}, Elevation ${result.elevation.toFixed(2)}°, Actual flight time ${result.flightTime.toFixed(2)}s (target: ${targetTime.toFixed(1)}s, error: ${(result.error * 100).toFixed(0)}ms)`;
                 infoDisplay.style.borderLeftColor = '#88ffaa';
             } else {
-                feasibleDisplay.textContent = '<i data-lucide="triangle-alert" class="icon-sm"></i> Approx';
+                feasibleDisplay.textContent = '⚠️ Approx';
                 feasibleDisplay.className = 'feasible-maybe';
-                infoDisplay.textContent = `<i data-lucide="triangle-alert" class="icon-sm"></i> Closest match: Charge ${result.charge}, Elevation ${result.elevation.toFixed(2)}°, Actual flight time ${result.flightTime.toFixed(2)}s (target: ${targetTime.toFixed(1)}s, error: ${(result.error * 100).toFixed(0)}ms) - Try adjusting time or range`;
+                infoDisplay.textContent = `⚠️ Closest match: Charge ${result.charge}, Elevation ${result.elevation.toFixed(2)}°, Actual flight time ${result.flightTime.toFixed(2)}s (target: ${targetTime.toFixed(1)}s, error: ${(result.error * 100).toFixed(0)}ms) - Try adjusting time or range`;
                 infoDisplay.style.borderLeftColor = '#ffd93d';
             }
 
@@ -265,9 +265,9 @@ document.addEventListener('DOMContentLoaded', function() {
             flightTimeDisplay.textContent = '—';
             maxRangeDisplay.textContent = '—';
             t60Display.textContent = '—';
-            feasibleDisplay.textContent = '<i data-lucide="circle-x" class="icon-sm"></i> No';
+            feasibleDisplay.textContent = '❌ No';
             feasibleDisplay.className = 'feasible-no';
-            infoDisplay.textContent = '<i data-lucide="circle-x" class="icon-sm"></i> No powder charge can achieve this combination of flight time and range. Try adjusting values.';
+            infoDisplay.textContent = '❌ No powder charge can achieve this combination of flight time and range. Try adjusting values.';
             infoDisplay.style.borderLeftColor = '#ff6644';
             
             elevationDisplay.style.color = '#ff6644';
@@ -330,10 +330,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const toolLabels = {
                 select: '🖱️ Click to select markers, drag to move them',
-                drag: '<i data-lucide="hand" class="icon-sm"></i> Drag to pan around the map',
-                intelPen: '<i data-lucide="pencil" class="icon-sm"></i> Click and drag to draw an Intel arrow',
-                vectorPen: '<i data-lucide="pen-tool" class="icon-sm"></i> Click and drag to draw a Vector arrow',
-                compass: '<i data-lucide="drafting-compass" class="icon-sm"></i> Click and drag to draw a distance circle'
+                drag: '✋ Drag to pan around the map',
+                intelPen: '✏️ Click and drag to draw an Intel arrow',
+                vectorPen: '🖍️ Click and drag to draw a Vector arrow',
+                compass: '⚪ Click and drag to draw a distance circle'
             };
             if (elements.drawingInfo) {
                 elements.drawingInfo.innerHTML = `<p style="color:#88bbff; font-size:0.8rem;">${toolLabels[this.dataset.tool] || ''}</p>`;
@@ -503,4 +503,5 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('removeAllMeasurementsBtn').addEventListener('click', () => {
         gridMapper.removeAllMeasurements();
     });
+
 });
