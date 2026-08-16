@@ -207,8 +207,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update info with range status
         const isMax = Math.abs(clampedRange - maxRange) < 0.01;
         const infoMsg = isMax 
-            ? '<i data-lucide="zap" class="icon-sm"></i> At maximum range! Elevation = 60° (forced by game)'
-            : `<i data-lucide="lightbulb" class="icon-sm"></i> Elevation = (${clampedRange.toFixed(1)} × 12) / ${charge} = ${elevation.toFixed(2)}°`;
+            ? 'At maximum range! Elevation = 60° (forced by game)'
+            : `Elevation = (${clampedRange.toFixed(1)} × 12) / ${charge} = ${elevation.toFixed(2)}°`;
         infoDisplay.textContent = infoMsg;
         infoDisplay.style.borderLeftColor = isMax ? '#ffd93d' : '#4a7a8a';
     }

@@ -245,7 +245,18 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof lucide !== 'undefined') {
+                // Initial icon creation
                 lucide.createIcons();
+                
+                // Auto-refresh icons when new content is added
+                const observer = new MutationObserver(() => {
+                    lucide.createIcons();
+                });
+                
+                observer.observe(document.body, {
+                    childList: true,
+                    subtree: true
+                });
             }
         });
     </script>
